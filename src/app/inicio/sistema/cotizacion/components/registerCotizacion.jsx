@@ -10,6 +10,7 @@ import {
 const initialFormState = {
     idCliente: "",
     idUser: "",
+    idAgente: "",
     idTipoproyecto: "",
     id_envio: "",
 };
@@ -81,6 +82,9 @@ export default function CotizacionForm({ isOpen, onClose }) {
                                         {(cliente) => <SelectItem key={cliente.id}>{cliente.nombre}</SelectItem>}
                                     </Select>
                                     <Select name="idUser" label="Vendedor" items={catalogs.usuarios} onChange={handleSelectChange} isRequired>
+                                        {(usuario) => <SelectItem key={usuario.id}>{usuario.fullname}</SelectItem>}
+                                    </Select>
+                                    <Select name="idAgente" label="Agente" items={catalogs.usuarios} onChange={handleSelectChange} isRequired>
                                         {(usuario) => <SelectItem key={usuario.id}>{usuario.fullname}</SelectItem>}
                                     </Select>
                                     <Select name="idTipoproyecto" label="Tipo de Proyecto" items={catalogs.tiposProyecto} onChange={handleSelectChange} isRequired>

@@ -16,6 +16,18 @@ const tipoProyectoConfig = {
     initialState: { nombre: "" },
 };
 
+const descuento = {
+    title: "Descuentos",
+    apiEndpoint: "/api/descuentos",
+    columns: [
+        { key: "descuento", label: "Descuento" },
+    ],
+    formFields: [
+        { name: "descuento", label: "Descuento Global" },
+    ],
+    initialState: { descuento: "" },
+};
+
 // Configuración para el catálogo "Métodos de Envío"
 const envioConfig = {
     title: "Métodos de Envío",
@@ -42,6 +54,7 @@ export default function CatalogosPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 sm:p-8">
             <GenericCatalog {...tipoProyectoConfig} />
             <GenericCatalog {...envioConfig} />
+            <GenericCatalog {...descuento} />
         </div>
     );
 }

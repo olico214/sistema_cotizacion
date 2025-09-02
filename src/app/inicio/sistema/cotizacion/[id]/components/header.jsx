@@ -63,6 +63,10 @@ export default function CotizacionHeader({ cotizacion, catalogs, onUpdate }) {
                         <p className="text-sm text-default-500">Método de Envío</p>
                         <p>{cotizacion.envio_descripcion || "No especificado"}</p>
                     </div>
+                    <div>
+                        <p className="text-sm text-default-500">Agente</p>
+                        <p>{cotizacion.nombre_agente || "No especificado"}</p>
+                    </div>
                     <Select
                         label="Estatus de la cotización"
                         selectedKeys={[cotizacion.estatus]}
@@ -90,6 +94,9 @@ export default function CotizacionHeader({ cotizacion, catalogs, onUpdate }) {
                                             {(item) => <SelectItem key={item.id}>{item.nombre}</SelectItem>}
                                         </Select>
                                         <Select name="idUser" label="Vendedor" items={catalogs.usuarios} selectedKeys={[String(editFormData.idUser)]} onChange={handleEditFormChange} isRequired>
+                                            {(item) => <SelectItem key={item.id}>{item.fullname}</SelectItem>}
+                                        </Select>
+                                        <Select name="idAgente" label="Agente" items={catalogs.usuarios} selectedKeys={[String(editFormData.idAgente)]} onChange={handleEditFormChange} isRequired>
                                             {(item) => <SelectItem key={item.id}>{item.fullname}</SelectItem>}
                                         </Select>
                                         <Select name="idTipoproyecto" label="Tipo de Proyecto" items={catalogs.tiposProyecto} selectedKeys={[String(editFormData.idTipoproyecto)]} onChange={handleEditFormChange} isRequired>

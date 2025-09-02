@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Modal, ModalContent,
     ModalHeader,
@@ -8,6 +8,7 @@ import {
     ModalFooter,
     Button,
     useDisclosure,
+    Checkbox,
     Input,
     Select,
     SelectItem
@@ -27,6 +28,9 @@ const initialFormData = {
     colorProveedor: '',
     tamano: '',
     stockinicial: '',
+    margen: '',
+    is_automatizacion: false,
+    is_persiana: false,
 };
 
 const productTypes = [
@@ -41,6 +45,19 @@ export default function RegisterProduct() {
 
     const [productType, setProductType] = useState("otro");
     const [formData, setFormData] = useState(initialFormData);
+
+    useEffect(() => {
+        const cost = parseFloat(formData.costo);
+        const margin = parseFloat(formData.margen);
+
+        if (cost > 0 && margin >= 0 && margin < 100) {
+            const calculatedPrice = cost / (1 - (margin / 100));
+            setFormData(prev => ({ ...prev, precio: calculatedPrice.toFixed(2) }));
+        } else {
+            // Si el costo o el margen no son válidos, limpia el precio
+            setFormData(prev => ({ ...prev, precio: '' }));
+        }
+    }, [formData.costo, formData.margen]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -99,14 +116,29 @@ export default function RegisterProduct() {
                                         ))}
                                     </Select>
 
+                                    <div className="flex gap-4 md:col-span-2">
+                                        <Checkbox
+                                            isSelected={formData.is_automatizacion}
+                                            onValueChange={isSelected => setFormData(prev => ({ ...prev, is_automatizacion: isSelected }))}
+                                        >
+                                            Automatización
+                                        </Checkbox>
+                                        <Checkbox
+                                            isSelected={formData.is_persiana}
+                                            onValueChange={isSelected => setFormData(prev => ({ ...prev, is_persiana: isSelected }))}
+                                        >
+                                            Persianas
+                                        </Checkbox>
+                                    </div>
                                     {/* Inputs comunes y condicionales (sin cambios aquí) */}
                                     <Input name="nombre" label="Nombre" value={formData.nombre} onChange={handleInputChange} />
                                     <Input name="sku" label="SKU" value={formData.sku} onChange={handleInputChange} />
                                     <Input name="descripcion" label="Descripción" value={formData.descripcion} onChange={handleInputChange} className="md:col-span-2" />
                                     <Input name="tamano" label="Tamaño" value={formData.tamano} onChange={handleInputChange} />
                                     <Input name="stockinicial" label="Stock Inicial" type="number" value={formData.stockinicial} onChange={handleInputChange} />
-                                    <Input name="costo" label="Costo" type="number" startContent="$" value={formData.costo} onChange={handleInputChange} />
-                                    <Input name="precio" label="Precio" type="number" startContent="$" value={formData.precio} onChange={handleInputChange} />
+                                    <Input name="costo" label="Costo" type="number" startContent="$" value={formData.costo} onChange={handleInputChange} isRequired />
+                                    <Input name="margen" label="Margen" type="number" startContent="%" value={formData.margen} onChange={handleInputChange} />
+                                    <Input name="precio" label="Precio" type="number" startContent="$" value={formData.precio} isReadOnly />
                                     {productType === 'Telas' && (
                                         <>
                                             <Input name="medidas" label="Medidas" value={formData.medidas} onChange={handleInputChange} />

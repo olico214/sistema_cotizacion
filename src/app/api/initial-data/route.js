@@ -9,13 +9,15 @@ export async function GET() {
             usuarios,
             productos,
             tiposProyecto,
-            envios
+            envios,
+            descuento
         ] = await Promise.all([
             pool.query("SELECT * FROM clientes ORDER BY nombre ASC"),
             pool.query("SELECT id, fullname, type FROM users_data ORDER BY fullname ASC"), // Note: Select only non-sensitive data
             pool.query("SELECT * FROM productos ORDER BY nombre ASC"),
             pool.query("SELECT * FROM tipo_proyecto ORDER BY nombre ASC"),
-            pool.query("SELECT * FROM envio ORDER BY descripcion ASC")
+            pool.query("SELECT * FROM envio ORDER BY descripcion ASC"),
+            pool.query("SELECT * FROM descuento")
         ]);
 
         // The final data object combines the results from all queries
@@ -25,6 +27,7 @@ export async function GET() {
             productos: productos[0],
             tiposProyecto: tiposProyecto[0],
             envios: envios[0],
+            descuento: descuento[0],
         };
 
         return NextResponse.json({ ok: true, data });

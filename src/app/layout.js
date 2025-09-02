@@ -2,8 +2,8 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 export const metadata = {
-  title: "Grupo pir",
-  description: "Grupo pir",
+  title: "Smart Blinds",
+  description: "Smart Blinds",
 };
 
 export default async function RootLayout({ children }) {

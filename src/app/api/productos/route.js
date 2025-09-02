@@ -8,16 +8,16 @@ export async function POST(req) {
         const {
             nombre, sku, descripcion, tamano, tipo, medidas,
             modeloSB, colorSB, modeloProveedor, colorProveedor,
-            costo, stockinicial, precio // Añadimos 'precio'
+            costo, stockinicial, precio, margen, is_automatizacion, is_persiana
         } = await req.json();
-        console.log(tipo)
+
         // 2. Creamos la consulta SQL para insertar en la tabla `productos`
         const query = `
       INSERT INTO productos (
         nombre, sku, descripcion, tamano, tipo, medidas,
         modeloSB, colorSB, modeloProveedor, colorProveedor,
-        costo, stockinicial, precio
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        costo, stockinicial, precio, margen, is_automatizacion, is_persiana
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
         // 3. Preparamos los valores en el orden correcto
@@ -35,7 +35,10 @@ export async function POST(req) {
             colorProveedor,
             costo || null,
             stockinicial || null,
-            precio || null
+            precio || null,
+            margen || null,
+            is_automatizacion || false,
+            is_persiana || false
         ];
 
         // 4. Ejecutamos la consulta

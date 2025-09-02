@@ -10,17 +10,21 @@ export async function GET() {
                 ov.estatus,
                 ov.createdDate,
                 c.nombre AS cliente_nombre,
-                u.fullname AS usuario_nombre
+                u.fullname AS usuario_nombre,
+                uAgent.fullname AS nombre_agente
             FROM 
                 listado_ov AS ov
             LEFT JOIN 
                 clientes AS c ON ov.idCliente = c.id
             LEFT JOIN 
                 users_data AS u ON ov.idUser = u.id
+            LEFT JOIN 
+                users_data AS uAgent ON ov.idAgente = uAgent.id
             ORDER BY 
                 ov.id DESC;
         `;
         const [result] = await pool.query(query);
+        console.log(result)
         return NextResponse.json({ ok: true, data: result });
     } catch (error) {
         return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
@@ -30,17 +34,17 @@ export async function GET() {
 // CREAR una nueva cotización (el encabezado)
 export async function POST(req) {
     try {
-        const { idCliente, idUser, idTipoproyecto, id_envio } = await req.json();
+        const { idCliente, idUser, idTipoproyecto, id_envio, idAgente } = await req.json();
 
-        if (!idCliente || !idUser || !idTipoproyecto) {
+        if (!idCliente || !idTipoproyecto) {
             return NextResponse.json({ ok: false, error: "Cliente, usuario y tipo de proyecto son requeridos." }, { status: 400 });
         }
 
         const query = `
-            INSERT INTO listado_ov (idCliente, idUser, idTipoproyecto, id_envio, estatus, createdDate)
-            VALUES (?, ?, ?, ?, 'Nuevo', NOW())
+            INSERT INTO listado_ov (idCliente, idUser,idAgente, idTipoproyecto, id_envio, estatus, createdDate)
+            VALUES (?, ?,?,?, ?, 'Nuevo', NOW())
         `;
-        const values = [idCliente, idUser, idTipoproyecto, id_envio || null];
+        const values = [idCliente, idUser, idAgente, idTipoproyecto, id_envio || null];
 
         const [result] = await pool.query(query, values);
 

@@ -22,6 +22,9 @@ const columns = [
     { key: "sku", label: "SKU" },
     { key: "tipo", label: "TIPO" },
     { key: "costo", label: "COSTO" },
+    { key: "margen", label: "MARGEN" },
+    { key: "is_automatizacion", label: "AUTOMATIZACION" },
+    { key: "is_persiana", label: "PERSIANA" },
     { key: "precio", label: "PRECIO" },
     { key: "stockinicial", label: "STOCK" },
 ];

@@ -13,7 +13,8 @@ export default function CotizacionDetailPage() {
     const [data, setData] = useState({ cotizacion: null, productos: [] });
     const [catalogs, setCatalogs] = useState({ productos: [], clientes: [], usuarios: [], tiposProyecto: [], envios: [] });
     const [isLoading, setIsLoading] = useState(true);
-
+    const [comision, setComision] = useState(0)
+    const [proteccion, setProteccion] = useState(0)
     // Esta función ahora se pasará como prop para que los hijos puedan refrescar los datos
     const fetchData = useCallback(async () => {
         setIsLoading(true);
@@ -28,7 +29,9 @@ export default function CotizacionDetailPage() {
 
             if (cotizacionData.ok) setData(cotizacionData.data);
             if (catalogsData.ok) setCatalogs(catalogsData.data);
+            setProteccion(cotizacionData.data.cotizacion.proteccion || 0)
 
+            setComision(((cotizacionData.data.cotizacion.comision_vendedor || 0) + (cotizacionData.data.cotizacion.comision_agente || 0)))
         } catch (error) {
             console.error("Error al cargar los datos:", error);
         } finally {
@@ -59,7 +62,10 @@ export default function CotizacionDetailPage() {
                 quoteStatus={data.cotizacion.estatus}
                 initialProducts={data.productos}
                 productCatalog={catalogs.productos}
-                onUpdate={fetchData} // Pasa la misma función para refrescar
+                descuento={catalogs.descuento[0].descuento || 28}
+                onUpdate={fetchData}
+                comision={comision}
+                proteccion={proteccion}
             />
         </div>
     );
