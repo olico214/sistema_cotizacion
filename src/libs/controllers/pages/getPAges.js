@@ -38,7 +38,7 @@ export const fetchPaginasDiponibles = async (value) => {
       LEFT JOIN perfil_view t2 ON t1.profile = t2.idPerfil
       LEFT JOIN views t3 ON t3.id = t2.idPage
       WHERE t0.userID = ? and t0.status =?
-      ORDER BY t3.apps desc
+      ORDER BY t3.apps desc, t3.position asc
     `;
     const [result] = await connection.query(query, [value, "active"]);
     return result;

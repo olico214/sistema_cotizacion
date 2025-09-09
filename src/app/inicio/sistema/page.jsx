@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { validateCookie } from "@/libs/usercontroller/usercontroller";
-import CotizacionesTable from "./components/cotizacionTable";
+import CotizacionesTable from "./components/tablecotizaciones";
 
 export default async function SistemaPAge() {
     const id = await validateCookie();
@@ -10,7 +10,7 @@ export default async function SistemaPAge() {
     }
 
     // Hacemos la carga de datos del lado del servidor
-    const res = await fetch(process.env.FRONTEND_URL + "/api/listado_ov", { cache: 'no-store' });
+    const res = await fetch(process.env.FRONTEND_URL + "/api/listado-cotizaciones", { cache: 'no-store' });
     const data = await res.json();
     const result = data.ok ? data.data : [];
 

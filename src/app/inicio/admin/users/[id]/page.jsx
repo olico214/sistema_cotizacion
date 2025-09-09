@@ -8,7 +8,7 @@ export default async function Home({ params }) {
   const perfiles = data.resultPerfiles;
   return (
     <div>
-      <DataUsuariosComponent data={pages[0]} perfiles={perfiles} />
+      <DataUsuariosComponent data={pages[0]} perfiles={perfiles} id={id} />
     </div>
   );
 }

@@ -20,7 +20,7 @@ export async function GET() {
                 users_data AS u ON ov.idUser = u.id
             LEFT JOIN 
                 users_data AS uAgent ON ov.idAgente = uAgent.id
-                where ov.estatus='Nuevo'
+                where ov.estatus!='Nuevo'
             ORDER BY 
                 ov.id DESC;
         `;

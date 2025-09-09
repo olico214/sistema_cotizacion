@@ -1,5 +1,6 @@
 "use client";
 
+import CondicionesGeneralesComponent from "./condicionesGenerales";
 import GenericCatalog from "./genericCatalog";
 
 // Configuración para el catálogo "Tipos de Proyecto"
@@ -16,16 +17,37 @@ const tipoProyectoConfig = {
     initialState: { nombre: "" },
 };
 
+const instalacion = {
+    title: "Instalacion",
+    apiEndpoint: "/api/instalacion",
+    columns: [
+        { key: "minimo", label: "Minimo" },
+        { key: "maximo", label: "Maximo" },
+        { key: "precio", label: "Precio" },
+        { key: "actions", label: "Acciones" },
+    ],
+    formFields: [
+        { name: "minimo", label: "Minimo" },
+        { name: "maximo", label: "Maximo" },
+        { name: "precio", label: "Precio" },
+    ],
+    initialState: { minimo: "", maximo: "", precio: "" },
+};
+
 const descuento = {
     title: "Descuentos",
     apiEndpoint: "/api/descuentos",
     columns: [
         { key: "descuento", label: "Descuento" },
+        { key: "titulo", label: "Titulo" },
+        { key: "comentario", label: "Comentario" },
     ],
     formFields: [
         { name: "descuento", label: "Descuento Global" },
+        { name: "titulo", label: "Titulo" },
+        { name: "comentario", label: "Comentario" },
     ],
-    initialState: { descuento: "" },
+    initialState: { descuento: "", titulo: "", comentario: "" },
 };
 
 // Configuración para el catálogo "Métodos de Envío"
@@ -52,9 +74,20 @@ const envioConfig = {
 export default function CatalogosPage() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 sm:p-8">
+
             <GenericCatalog {...tipoProyectoConfig} />
             <GenericCatalog {...envioConfig} />
-            <GenericCatalog {...descuento} />
+            <div className="lg:col-span-2">
+                <GenericCatalog {...descuento} />
+            </div>
+            <div className="lg:col-span-2">
+
+                <GenericCatalog {...instalacion} />
+            </div>
+            <div className="lg:col-span-2">
+
+                <CondicionesGeneralesComponent />
+            </div>
         </div>
     );
 }

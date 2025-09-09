@@ -29,7 +29,7 @@ const initialClientState = {
     selected_canal_venta: '',
 };
 
-export default function ClienteComponent() {
+export default function ClienteComponent({ type = 'new', fetchCatalogs = null }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [clientData, setClientData] = useState(initialClientState);
     const [canalesVenta, setCanalesVenta] = useState([]); // State for sales channels
@@ -87,7 +87,7 @@ export default function ClienteComponent() {
             }
 
             const result = await res.json();
-            console.log("Client saved successfully:", result);
+            fetchCatalogs()
             setClientData(initialClientState); // Resets the form
             onClose(); // Closes the modal
         } catch (error) {
@@ -97,7 +97,12 @@ export default function ClienteComponent() {
 
     return (
         <>
-            <Button onPress={onOpen} color="primary">Registrar Cliente</Button>
+            {type === 'new'
+                ?
+                <Button onPress={onOpen} color="primary">Registrar Cliente</Button>
+                :
+                <Button onPress={onOpen} color="primary" variant="light">Registrar Cliente</Button>
+            }
             <Modal
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}

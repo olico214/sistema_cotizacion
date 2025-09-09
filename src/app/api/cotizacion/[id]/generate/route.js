@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
+import { NextResponse } from "next/server";
 
 // OBTENER los detalles completos de UNA cotización
 export async function GET(req, { params }) {
@@ -24,10 +24,12 @@ export async function GET(req, { params }) {
                 c.colonia AS cliente_colonia,
                 c.domicilio AS cliente_domicilio,
                 c.frecuente as cliente_frecuente,
+                c.cp as codigo_postal,
                 ov.iva,
                 ov.precioNormal,
                 ov.precioNormalconDescuento,
-                ov.precioReal
+                ov.precioReal,
+                ov.descuento
             FROM 
                 listado_ov AS ov
             LEFT JOIN clientes AS c ON ov.idCliente = c.id
@@ -40,58 +42,45 @@ export async function GET(req, { params }) {
         if (headerResult.length === 0) {
             return NextResponse.json({ message: "Cotización no encontrada" }, { status: 404 });
         }
-
+        console.log("headers")
         // Query para los productos
         const productQuery = `
-            SELECT 
-                pov.*, 
-                p.nombre as producto_nombre, 
-                p.descripcion as descripcion, 
-                p.medidas as medida, 
-                p.tipo as producto_tipo,
-                p.costo as actual_costo,
-                p.precio as actual_precio,
+SELECT 
+pov.*, 
+p.nombre as producto_nombre, 
+p.descripcion as descripcion, 
+p.medidas as medida, 
+p.tipo as producto_tipo,
+p.costo as actual_costo,
+p.precio as actual_precio,
                 p.sku
-
-            FROM products_ov pov
+                
+                FROM products_ov pov
             JOIN productos p ON pov.idProducto = p.id
             WHERE pov.idCotizacion = ?;
-        `;
+            `;
         const [productsResult] = await pool.query(productQuery, [id]);
+        // Query para los productos
+        console.log("products")
+        const condiciones = `
+        SELECT * from condiciones_generales order by orden asc`;
+        const [condicionesResult] = await pool.query(condiciones, []);
+        console.log("condiciones")
+
+
+        const descuento = `
+        SELECT titulo,comentario from descuento`;
+        const [descuentoResult] = await pool.query(descuento, []);
+        console.log("descuento")
 
         return NextResponse.json({
             cotizacion: headerResult[0],
-            productos: productsResult
+            productos: productsResult,
+            condiciones_generales: condicionesResult,
+            descuento: descuentoResult[0]
         });
 
     } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
-}
-export async function PUT(req, { params }) {
-
-    try {
-
-        const { id } = await params;
-
-        const { idCliente, idUser, idTipoproyecto, id_envio, estatus, idAgente } = await req.json();
-
-        const newStatus = estatus == "Cancelar" ? "Cancelado" : null
-
-        const query = `UPDATE listado_ov 
-        SET idCliente = ?, idUser = ?, idTipoproyecto = ?, id_envio = ?, estatus = ? ,idAgente=?
- WHERE id = ? `;
-
-        await pool.query(query, [idCliente, idUser, idTipoproyecto, id_envio, newStatus, idAgente, id]);
-
-
-
-        return NextResponse.json({ ok: true, message: "Cotización actualizada" });
-
-    } catch (error) {
-
-        return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
-
-    }
-
 }

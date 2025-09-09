@@ -6,7 +6,7 @@ import {
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
     Button, Chip, useDisclosure, Tooltip
 } from "@nextui-org/react";
-import CotizacionForm from "./registerCotizacion";
+
 
 
 const statusColorMap = {
@@ -54,7 +54,7 @@ export default function CotizacionesTable({ initialData }) {
                             </TableCell>
                             <TableCell>
                                 <Tooltip content="Ver detalles y añadir productos">
-                                    <Button as={Link} href={`/inicio/sistema/cotizacion/${item.id}`} color="primary" variant="light" size="sm">
+                                    <Button as={Link} href={`/inicio/sistema/${item.id}`} color="primary" variant="light" size="sm">
                                         Detalles
                                     </Button>
                                 </Tooltip>
@@ -64,7 +64,6 @@ export default function CotizacionesTable({ initialData }) {
                 </TableBody>
             </Table>
 
-            <CotizacionForm isOpen={isOpen} onClose={onOpenChange} />
         </div>
     );
 }

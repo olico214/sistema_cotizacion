@@ -16,7 +16,7 @@ const statusColorMap = {
     Cancelado: "danger",
 };
 
-export default function CotizacionesTable({ initialData }) {
+export default function CotizacionesTable({ initialData, user }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const formatDate = (dateString) => {
@@ -54,7 +54,7 @@ export default function CotizacionesTable({ initialData }) {
                             </TableCell>
                             <TableCell>
                                 <Tooltip content="Ver detalles y añadir productos">
-                                    <Button as={Link} href={`/inicio/sistema/cotizacion/${item.id}`} color="primary" variant="light" size="sm">
+                                    <Button as={Link} href={`/inicio/sistema/crear-cotizacion/${item.id}`} color="primary" variant="light" size="sm">
                                         Detalles
                                     </Button>
                                 </Tooltip>
@@ -64,7 +64,7 @@ export default function CotizacionesTable({ initialData }) {
                 </TableBody>
             </Table>
 
-            <CotizacionForm isOpen={isOpen} onClose={onOpenChange} />
+            <CotizacionForm isOpen={isOpen} onClose={onOpenChange} user={user} />
         </div>
     );
 }

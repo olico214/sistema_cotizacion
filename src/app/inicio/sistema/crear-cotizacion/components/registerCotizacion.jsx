@@ -6,6 +6,7 @@ import {
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Button, Select, SelectItem, Spinner
 } from "@nextui-org/react";
+import ClienteComponent from "../../clientes/components/registroCliente/registrarCliente";
 
 const initialFormState = {
     idCliente: "",
@@ -15,7 +16,7 @@ const initialFormState = {
     id_envio: "",
 };
 
-export default function CotizacionForm({ isOpen, onClose }) {
+export default function CotizacionForm({ isOpen, onClose, user }) {
     const router = useRouter();
     const [formData, setFormData] = useState(initialFormState);
     const [catalogs, setCatalogs] = useState({ clientes: [], usuarios: [], tiposProyecto: [], envios: [] });
@@ -25,21 +26,22 @@ export default function CotizacionForm({ isOpen, onClose }) {
     // Carga los catálogos para los Selects cuando se abre el modal
     useEffect(() => {
         if (isOpen) {
-            const fetchCatalogs = async () => {
-                setIsCatalogsLoading(true);
-                try {
-                    const res = await fetch('/api/initial-data');
-                    const data = await res.json();
-                    if (data.ok) setCatalogs(data.data);
-                } catch (error) {
-                    console.error("Error al cargar catálogos", error);
-                } finally {
-                    setIsCatalogsLoading(false);
-                }
-            };
+
             fetchCatalogs();
         }
     }, [isOpen]);
+    const fetchCatalogs = async () => {
+        setIsCatalogsLoading(true);
+        try {
+            const res = await fetch('/api/initial-data?user=' + user);
+            const data = await res.json();
+            if (data.ok) setCatalogs(data.data);
+        } catch (error) {
+            console.error("Error al cargar catálogos", error);
+        } finally {
+            setIsCatalogsLoading(false);
+        }
+    };
 
     const handleSelectChange = (e) => {
         const { name, value } = e.target;
@@ -58,7 +60,7 @@ export default function CotizacionForm({ isOpen, onClose }) {
             if (!result.ok) throw new Error(result.error);
 
             // ¡Redirección! La parte clave del flujo.
-            router.push(`./cotizacion/${result.id}`);
+            router.push(`./crear-cotizacion/${result.id}`);
 
         } catch (error) {
             console.error("Error al crear la cotización:", error);
@@ -68,7 +70,7 @@ export default function CotizacionForm({ isOpen, onClose }) {
     };
 
     return (
-        <Modal isOpen={isOpen} onOpenChange={onClose} size="2xl" isDismissable={false}>
+        <Modal isOpen={isOpen} onOpenChange={onClose} size="5xl" isDismissable={false}>
             <ModalContent>
                 {(onCloseCallback) => (
                     <>
@@ -77,10 +79,15 @@ export default function CotizacionForm({ isOpen, onClose }) {
                             {isCatalogsLoading ? (
                                 <Spinner label="Cargando datos..." />
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Select name="idCliente" label="Cliente" items={catalogs.clientes} onChange={handleSelectChange} isRequired>
-                                        {(cliente) => <SelectItem key={cliente.id}>{cliente.nombre}</SelectItem>}
-                                    </Select>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="flex gap-1">
+
+                                        <Select name="idCliente" label="Cliente" items={catalogs.clientes} onChange={handleSelectChange} isRequired>
+                                            {(cliente) => <SelectItem key={cliente.id}>{cliente.nombre}</SelectItem>}
+                                        </Select>
+                                        <ClienteComponent type={"cliente"} fetchCatalogs={fetchCatalogs} />
+                                    </div>
+
                                     <Select name="idUser" label="Vendedor" items={catalogs.usuarios} onChange={handleSelectChange} isRequired>
                                         {(usuario) => <SelectItem key={usuario.id}>{usuario.fullname}</SelectItem>}
                                     </Select>

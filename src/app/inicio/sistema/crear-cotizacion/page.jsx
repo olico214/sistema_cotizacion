@@ -17,7 +17,7 @@ export default async function SistemaPAge() {
     return (
         <div>
             {/* Pasamos los datos iniciales como prop al componente de cliente */}
-            <CotizacionesTable initialData={result} />
+            <CotizacionesTable initialData={result} user={user} />
         </div>
     );
 }

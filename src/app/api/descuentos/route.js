@@ -12,14 +12,14 @@ export async function GET() {
 
 export async function POST(req) {
     try {
-        const { descuento } = await req.json();
+        const { descuento, titulo, comentario } = await req.json();
 
         // Verificar si ya existe un registro
         const [rows] = await pool.query("SELECT COUNT(*) AS count FROM descuento");
 
         if (rows[0].count > 0) {
             // Si existe, actualizamos
-            await pool.query("UPDATE descuento SET descuento = ? WHERE id = 1", [descuento]);
+            await pool.query("UPDATE descuento SET descuento = ? , titulo = ? , comentario = ? WHERE id = 1", [descuento, titulo, comentario]);
             return NextResponse.json({ ok: true, updated: true });
         } else {
             // Si no existe, insertamos
