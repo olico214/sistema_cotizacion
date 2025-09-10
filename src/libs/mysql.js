@@ -6,10 +6,10 @@ let pool;
 
 try {
   pool = mysql.createPool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD, // deja vacío si no pusiste contraseña
-    database: process.env.DATABASE,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD, // deja vacío si no pusiste contraseña
+    database: process.env.DB_NAME,
     multipleStatements: true,
     namedPlaceholders: true,
   });
