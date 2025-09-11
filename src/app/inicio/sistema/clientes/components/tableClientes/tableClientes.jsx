@@ -5,6 +5,7 @@ import {
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
     Input, Chip, Pagination, Spinner, Tooltip, Button
 } from "@nextui-org/react";
+import ClienteComponent from "../registroCliente/registrarCliente";
 
 // Columnas que se mostrarán en la tabla
 const columns = [
@@ -36,23 +37,23 @@ export default function ClientesTable() {
 
     // Carga los datos de la API cuando el componente se monta
     useEffect(() => {
-        const fetchClientes = async () => {
-            setIsLoading(true);
-            try {
-                const res = await fetch('/api/clientes');
-                const json = await res.json();
-                if (json.ok) {
-                    setClientes(json.data);
-                }
-            } catch (error) {
-                console.error("Fallo al obtener los clientes:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+
         fetchClientes();
     }, []);
-
+    const fetchClientes = async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/clientes');
+            const json = await res.json();
+            if (json.ok) {
+                setClientes(json.data);
+            }
+        } catch (error) {
+            console.error("Fallo al obtener los clientes:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     // Memoiza los clientes filtrados para mejorar el rendimiento
     const filteredItems = useMemo(() => {
         if (!filterValue) return clientes;
@@ -115,41 +116,44 @@ export default function ClientesTable() {
     }, [filterValue, onSearchChange]);
 
     return (
-        <Table
-            aria-label="Tabla de Clientes"
-            topContent={topContent}
-            topContentPlacement="outside"
-            bottomContent={
-                pages > 1 ? (
-                    <div className="flex w-full justify-center">
-                        <Pagination
-                            isCompact
-                            showControls
-                            color="primary"
-                            page={page}
-                            total={pages}
-                            onChange={setPage}
-                        />
-                    </div>
-                ) : null
-            }
-            bottomContentPlacement="outside"
-        >
-            <TableHeader columns={columns}>
-                {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-            </TableHeader>
-            <TableBody
-                items={items}
-                isLoading={isLoading}
-                loadingContent={<Spinner label="Cargando clientes..." />}
-                emptyContent={"No se encontraron clientes."}
+        <div className="grid grid-cols-1 gap-3">
+            <ClienteComponent fetchClientes={fetchClientes} />
+            <Table
+                aria-label="Tabla de Clientes"
+                topContent={topContent}
+                topContentPlacement="outside"
+                bottomContent={
+                    pages > 1 ? (
+                        <div className="flex w-full justify-center">
+                            <Pagination
+                                isCompact
+                                showControls
+                                color="primary"
+                                page={page}
+                                total={pages}
+                                onChange={setPage}
+                            />
+                        </div>
+                    ) : null
+                }
+                bottomContentPlacement="outside"
             >
-                {(item) => (
-                    <TableRow key={item.id}>
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
+                <TableHeader columns={columns}>
+                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                </TableHeader>
+                <TableBody
+                    items={items}
+                    isLoading={isLoading}
+                    loadingContent={<Spinner label="Cargando clientes..." />}
+                    emptyContent={"No se encontraron clientes."}
+                >
+                    {(item) => (
+                        <TableRow key={item.id}>
+                            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
     );
 }

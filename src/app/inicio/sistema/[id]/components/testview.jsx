@@ -58,8 +58,8 @@ export default function CotizacionProductsViewtest({ productos, cotizacion }) {
                         {(item) => (
                             <TableRow key={item.id}>
                                 <TableCell>{item.sku}</TableCell>
-                                <TableCell>{item.medida}</TableCell>
-                                <TableCell>{item.descripcion}</TableCell>
+                                <TableCell>{item.medidas}</TableCell>
+                                <TableCell>{item.description}</TableCell>
                                 <TableCell>${formatCurrency(item.preciounico)}</TableCell>
                                 <TableCell>{item.cantidad}</TableCell>
                                 <TableCell className="font-bold">${formatCurrency(item.preciototal)}</TableCell>

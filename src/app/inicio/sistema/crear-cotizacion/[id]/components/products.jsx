@@ -17,7 +17,10 @@ import {
     TableRow,
     TableCell,
     Tooltip,
-    Switch
+    Switch,
+    AutocompleteItem,
+    Autocomplete,
+    Textarea
 } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
@@ -52,7 +55,7 @@ const getPrecioInstalacion = (cantidadTelas) => {
 export default function CotizacionProducts({ quoteId, quoteStatus, initialProducts, productCatalog, onUpdate, descuento, comisionVendedor, comisionAgente, proteccion, isAdmin }) {
     const route = useRouter();
     const [products, setProducts] = useState([]);
-
+    const [toleracion, setTolerancia] = useState(0.15)
     // --- Estados para nuevas funcionalidades ---
     const [precioFinalManual, setPrecioFinalManual] = useState("");
     const [precioFinalError, setPrecioFinalError] = useState("");
@@ -65,7 +68,8 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
         alto: "",
         ancho: "",
         margen: "",
-        usarMargen: true
+        usarMargen: true,
+        ubicacion: ""
     });
 
     // --- Función principal de recálculo ---
@@ -198,12 +202,21 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
             ancho: parseFloat(newProductForm.ancho) || null,
             actual_costo: parseFloat(selectedProductInfo.costo) || 0,
             margen: newProductForm.usarMargen ? newProductForm.margen : 0,
+            ubicacion: newProductForm.ubicacion ? newProductForm.ubicacion : "",
             producto_nombre: selectedProductInfo.nombre,
-            producto_tipo: selectedProductInfo.tipo
+            producto_tipo: selectedProductInfo.tipo,
+            description: selectedProductInfo.tipo == "Telas"
+                ?
+                `Persianas Manuales de ${newProductForm.ubicacion}, ${newProductForm.cantidad} pieza de ${parseFloat(newProductForm.ancho) + parseFloat(toleracion)} metros de ancho por ${parseFloat(newProductForm.alto) + parseFloat(toleracion)} metros de alto, tipo ${selectedProductInfo.type} modelo ${selectedProductInfo.modeloSB} color ${selectedProductInfo.colorSB}`
+                : selectedProductInfo.descripcion,
+            newMedidas: selectedProductInfo.tipo == "Telas"
+                ?
+                `${parseFloat(newProductForm.ancho) + parseFloat(toleracion)} mts x ${parseFloat(newProductForm.alto) + parseFloat(toleracion)} mts.`
+                : selectedProductInfo.tamano
         };
         const updatedList = recalculateAllProducts([...products, newProductData]);
         setProducts(updatedList);
-        setNewProductForm({ idProducto: newProductForm.idProducto, cantidad: 1, alto: "", ancho: "", margen: newProductForm.usarMargen ? newProductForm.margen : "", usarMargen: true });
+        setNewProductForm({ idProducto: newProductForm.idProducto, cantidad: 1, alto: "", ancho: "", margen: newProductForm.usarMargen ? newProductForm.margen : "", usarMargen: true, ubicacion: "" });
     };
 
     const handleDeleteProduct = (productId) => {
@@ -238,10 +251,12 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
                 preciototal: item.calculated.subtotal,
                 alto: item.alto,
                 ancho: item.ancho,
-                ubicacion: "",
+                ubicacion: item.ubicacion,
                 comision_agente: item.calculated.comisionAgente,
                 comision_vendedor: item.calculated.comisionVendedor,
-                descuento: item.calculated.descuento
+                descuento: item.calculated.descuento,
+                newDescription: item.description,
+                newMedidas: item.newMedidas
             }));
             const precioNormal = totals.subtotalGeneral;
             const precioReal = precioFinalManual ? parseFloat(precioFinalManual) : totals.totalFinal;
@@ -250,11 +265,12 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
 
 
 
+
             try {
                 const response = await fetch(`/api/cotizacion/${quoteId}/products`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ products: productsToSave, precioNormal, precioReal, iva, descuento }),
+                    body: JSON.stringify({ products: productsToSave, precioNormal, precioReal, iva, descuento, toleracion }),
                 });
                 if (!response.ok) throw new Error('Error al guardar los productos');
 
@@ -285,35 +301,32 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
                     <CardHeader><h2 className="text-xl font-bold">Añadir Producto</h2></CardHeader>
                     <CardBody>
                         <form onSubmit={handleAddProduct} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-                                <Select
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                <Autocomplete
                                     label="Producto"
+                                    defaultItems={productCatalog}
+                                    selectedKey={newProductForm.idProducto}
                                     className="md:col-span-2"
-                                    items={productCatalog}
-                                    onChange={(e) => {
-                                        const selected = productCatalog.find(p => p.id == e.target.value);
-                                        setNewProductForm(p => ({ ...p, idProducto: e.target.value, alto: '', ancho: '', margen: selected?.margen || '' }));
+                                    onSelectionChange={(e) => {
+                                        const selected = productCatalog.find(p => p.id == e);
+                                        setNewProductForm(p => ({ ...p, idProducto: e, alto: '', ancho: '', margen: selected?.margen || '' }));
                                     }}
                                     isRequired
                                 >
-                                    {(prod) => <SelectItem key={prod.id} textValue={prod.nombre}>{prod.nombre} ({prod.tipo})</SelectItem>}
-                                </Select>
+                                    {(prod) => <AutocompleteItem key={prod.id} textValue={`${prod.sku} ${prod.type} ${prod.modeloSB} ${prod.colorSB}`}>{prod.tipo === 'Telas' ? `${prod.sku} ${prod.type} ${prod.modeloSB} ${prod.colorSB}` : prod.nombre} ({prod.tipo})</AutocompleteItem>}
+                                </Autocomplete>
                                 <Input label="Cantidad" type="number" min="1" value={newProductForm.cantidad} onValueChange={(v) => setNewProductForm(p => ({ ...p, cantidad: v }))} isRequired />
                                 {selectedProductInfo?.tipo === 'Telas' && (
                                     <>
-                                        <Input label="Alto (m)" type="number" step="0.01" value={newProductForm.alto} onValueChange={(v) => setNewProductForm(p => ({ ...p, alto: v }))} isRequired />
+                                        <Input label="Tolerancia" type="number" step="0.01" value={toleracion} onChange={(e) => setTolerancia(e.target.value)} isRequired />
                                         <Input label="Ancho (m)" type="number" step="0.01" value={newProductForm.ancho} onValueChange={(v) => setNewProductForm(p => ({ ...p, ancho: v }))} isRequired />
+                                        <Input label="Alto (m)" type="number" step="0.01" value={newProductForm.alto} onValueChange={(v) => setNewProductForm(p => ({ ...p, alto: v }))} isRequired />
+                                        <Textarea className="md:col-span-4" label="Ubicacion" type="text" value={newProductForm.ubicacion} onValueChange={(u) => setNewProductForm(p => ({ ...p, ubicacion: u }))} isRequired />
                                     </>
                                 )}
                                 {isAdmin && (
                                     <div className="flex flex-col gap-2 justify-end h-full md:col-span-1">
-                                        {/* <Switch
-                                            isSelected={newProductForm.usarMargen}
-                                            onValueChange={(isSelected) => setNewProductForm(p => ({ ...p, usarMargen: isSelected }))}
-                                            defaultSelected
-                                        >
-                                            Usar Margen
-                                        </Switch> */}
+
                                         {newProductForm.usarMargen && (
                                             <Input label="Margen (%)" type="number" value={newProductForm.margen} onValueChange={(v) => setNewProductForm(p => ({ ...p, margen: v }))} isRequired />
                                         )}
@@ -382,15 +395,17 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
                                     <Switch isSelected={incluyeIVA} onValueChange={setIncluyeIVA}>Incluir IVA (16%)</Switch>
                                     <hr className="my-2" />
                                     {incluyeIVA && (
-                                        <div className="flex justify-between text-default-600">
-                                            <span>Subtotal antes de IVA</span>
-                                            <span>${totals.subtotalAntesIVA.toFixed(2)}</span>
-                                        </div>
+                                        <>
+                                            <div className="flex justify-between text-default-600">
+                                                <span>Subtotal antes de IVA</span>
+                                                <span>${totals.subtotalAntesIVA.toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-default-600">
+                                                <span>IVA (16%)</span>
+                                                <span>+${totals.montoIVA.toFixed(2)}</span>
+                                            </div>
+                                        </>
                                     )}
-                                    <div className="flex justify-between text-default-600">
-                                        <span>IVA (16%)</span>
-                                        <span>+${totals.montoIVA.toFixed(2)}</span>
-                                    </div>
                                     <div className="flex justify-between w-full font-bold text-lg text-success-600">
                                         <span>{incluyeIVA ? 'Total (IVA Incluido)' : 'Total General'}</span>
                                         <span>${totals.totalFinal.toFixed(2)}</span>
@@ -401,6 +416,8 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
                     >
                         <TableHeader>
                             <TableColumn>PRODUCTO</TableColumn>
+                            <TableColumn>Medidas</TableColumn>
+                            <TableColumn>Descripcion</TableColumn>
                             <TableColumn>CANT.</TableColumn>
                             <TableColumn>COSTO BASE</TableColumn>
                             <TableColumn>+ PROT.</TableColumn>
@@ -417,6 +434,8 @@ export default function CotizacionProducts({ quoteId, quoteStatus, initialProduc
                             {(item) => (
                                 <TableRow key={item.id}>
                                     <TableCell>{item.producto_nombre}</TableCell>
+                                    <TableCell>{item.newMedidas}</TableCell>
+                                    <TableCell>{item.description}</TableCell>
                                     <TableCell>{item.cantidad}</TableCell>
                                     <TableCell>${(item.calculated?.costoBase || 0).toFixed(2)}</TableCell>
                                     <TableCell className="text-blue-600">+${(item.calculated?.proteccion || 0).toFixed(2)}</TableCell>

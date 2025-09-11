@@ -7,7 +7,8 @@ export async function POST(req, { params }) {
 
     try {
         const { id: idCotizacion } = await params;
-        const { products, precioNormal, precioReal, iva, descuento } = await req.json();
+        const { products, precioNormal, precioReal, iva, descuento, toleracion } = await req.json();
+        console.log(toleracion)
         // 1. Validar estatus antes de hacer cualquier cambio
         const [cotizacion] = await connection.query("SELECT estatus FROM listado_ov WHERE id = ?", [idCotizacion]);
         const estatusActual = cotizacion[0]?.estatus;
@@ -27,13 +28,12 @@ export async function POST(req, { params }) {
             await connection.commit(); // Confirmar la transacción (solo el borrado)
             return NextResponse.json({ message: "Productos eliminados. No se agregaron nuevos." });
         }
-
         // 5. Preparar la consulta para insertar los nuevos productos
         const query = `
             INSERT INTO products_ov (
                 idCotizacion, idproducto, cantidad, costo_pieza, proteccion, instalacion, 
                 margen, pormargen, preciounico, preciototal, alto, ancho, ubicacion, 
-                comision_agente, comision_vendedor, descuento
+                comision_agente, comision_vendedor, descuento,medidas,description
             ) VALUES ?
         `;
 
@@ -54,7 +54,9 @@ export async function POST(req, { params }) {
             p.ubicacion,
             p.comision_agente,
             p.comision_vendedor,
-            p.descuento
+            p.descuento,
+            p.newMedidas,
+            p.newDescription
         ]);
 
         // 7. Ejecutar la inserción masiva
@@ -63,8 +65,8 @@ export async function POST(req, { params }) {
 
         const precioconDescuento = precioNormal - (precioNormal * (descuento * 0.01));
 
-        const updatequery = `UPDATE listado_ov SET  estatus = ?,iva=?,precioNormal=?,precioReal=?,precioNormalconDescuento =?,descuento=? WHERE id = ? `;
-        await pool.query(updatequery, ['Finalizado', iva, precioNormal, precioReal, precioconDescuento, descuento, idCotizacion]);
+        const updatequery = `UPDATE listado_ov SET  estatus = ?,iva=?,precioNormal=?,precioReal=?,precioNormalconDescuento =?,descuento=?,tolerancia=? WHERE id = ? `;
+        await pool.query(updatequery, ['Finalizado', iva, precioNormal, precioReal, precioconDescuento, descuento, toleracion, idCotizacion]);
 
 
 

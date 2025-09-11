@@ -29,13 +29,17 @@ export async function GET(req, { params }) {
                 ov.precioNormal,
                 ov.precioNormalconDescuento,
                 ov.precioReal,
-                ov.descuento
+                ov.descuento,
+                ti.nombre as nombre_proyecto,
+                ov.linea_cotizada
+                
             FROM 
                 listado_ov AS ov
             LEFT JOIN clientes AS c ON ov.idCliente = c.id
             LEFT JOIN users_data AS u ON ov.idUser = u.id
             LEFT JOIN envio AS e ON ov.id_envio = e.id
             LEFT JOIN users_data AS uAgent ON ov.idAgente = uAgent.id
+            left join tipo_proyecto ti on ti.id = ov.idTipoProyecto
             WHERE ov.id = ?;
         `;
         const [headerResult] = await pool.query(headerQuery, [id]);
@@ -48,8 +52,6 @@ export async function GET(req, { params }) {
 SELECT 
 pov.*, 
 p.nombre as producto_nombre, 
-p.descripcion as descripcion, 
-p.medidas as medida, 
 p.tipo as producto_tipo,
 p.costo as actual_costo,
 p.precio as actual_precio,

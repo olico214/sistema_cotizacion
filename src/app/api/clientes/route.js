@@ -13,7 +13,9 @@ export async function POST(req) {
             ciudad,
             colonia,
             frecuente,
-            selected_canal_venta
+            selected_canal_venta,
+            cp,
+            tipo
         } = await req.json();
 
         // 2. Validación básica de los datos (puedes añadir más validaciones)
@@ -31,8 +33,8 @@ export async function POST(req) {
         const query = `
             INSERT INTO clientes (
                 nombre, telefono, email, domicilio, estado,
-                ciudad, colonia, frecuente, selected_canal_venta
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ciudad, colonia, frecuente, selected_canal_venta, tipo, cp
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         // 4. Crear el array de valores en el orden correcto
@@ -45,7 +47,9 @@ export async function POST(req) {
             ciudad,
             colonia,
             frecuente, // Esto será `true` o `false`
-            selected_canal_venta
+            selected_canal_venta,
+            tipo,
+            cp
         ];
 
         // 5. Ejecutar la consulta en la base de datos
@@ -95,7 +99,7 @@ export async function GET(req) {
             LEFT JOIN 
                 canal_venta AS cv ON c.selected_canal_venta = cv.id
             ORDER BY 
-                c.nombre ASC;
+                c.id ASC;
         `;
 
         const [result] = await pool.query(query);

@@ -4,7 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
-    Button, Select, SelectItem, Spinner
+    Button, Select, SelectItem, Spinner,
+    Autocomplete,
+    AutocompleteItem
 } from "@nextui-org/react";
 import ClienteComponent from "../../clientes/components/registroCliente/registrarCliente";
 
@@ -79,12 +81,19 @@ export default function CotizacionForm({ isOpen, onClose, user }) {
                             {isCatalogsLoading ? (
                                 <Spinner label="Cargando datos..." />
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="flex gap-1">
 
-                                        <Select name="idCliente" label="Cliente" items={catalogs.clientes} onChange={handleSelectChange} isRequired>
-                                            {(cliente) => <SelectItem key={cliente.id}>{cliente.nombre}</SelectItem>}
-                                        </Select>
+                                        <Autocomplete
+                                            name="idCliente"
+                                            label="Cliente"
+                                            selectedKey={formData.idCliente}
+                                            defaultItems={catalogs.clientes}
+                                            onSelectionChange={((e) => {
+                                                setFormData(prev => ({ ...prev, ["idCliente"]: e }));
+                                            })} isRequired>
+                                            {(cliente) => <AutocompleteItem key={cliente.id} value={cliente.nombre}>{cliente.nombre}</AutocompleteItem >}
+                                        </Autocomplete>
                                         <ClienteComponent type={"cliente"} fetchCatalogs={fetchCatalogs} />
                                     </div>
 

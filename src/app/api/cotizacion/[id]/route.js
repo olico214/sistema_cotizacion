@@ -46,8 +46,6 @@ export async function GET(req, { params }) {
             SELECT 
                 pov.*, 
                 p.nombre as producto_nombre, 
-                p.descripcion as descripcion, 
-                p.medidas as medida, 
                 p.tipo as producto_tipo,
                 p.costo as actual_costo,
                 p.precio as actual_precio,

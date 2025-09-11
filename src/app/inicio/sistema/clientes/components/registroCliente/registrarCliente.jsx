@@ -12,7 +12,8 @@ import {
     Input,
     Select,
     SelectItem,
-    Checkbox
+    Checkbox,
+    Textarea
 } from "@nextui-org/react";
 import CanalVentaComponent from "./canal_venta/registrarCanalVenta";
 
@@ -27,9 +28,11 @@ const initialClientState = {
     colonia: '',
     frecuente: false,
     selected_canal_venta: '',
+    cp: '',
+    tipo: ''
 };
 
-export default function ClienteComponent({ type = 'new', fetchCatalogs = null }) {
+export default function ClienteComponent({ type = 'new', fetchClientes = null }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [clientData, setClientData] = useState(initialClientState);
     const [canalesVenta, setCanalesVenta] = useState([]); // State for sales channels
@@ -73,7 +76,7 @@ export default function ClienteComponent({ type = 'new', fetchCatalogs = null })
 
     // Submits the form data to the API
     const handleSubmit = async (onClose) => {
-        console.log("Submitting client data:", clientData);
+
         try {
             // This endpoint needs to be created to save the new client
             const res = await fetch('/api/clientes', {
@@ -87,9 +90,9 @@ export default function ClienteComponent({ type = 'new', fetchCatalogs = null })
             }
 
             const result = await res.json();
-            fetchCatalogs()
             setClientData(initialClientState); // Resets the form
             onClose(); // Closes the modal
+            fetchClientes()
         } catch (error) {
             console.error("Error submitting form:", error);
         }
@@ -101,7 +104,7 @@ export default function ClienteComponent({ type = 'new', fetchCatalogs = null })
                 ?
                 <Button onPress={onOpen} color="primary">Registrar Cliente</Button>
                 :
-                <Button onPress={onOpen} color="primary" variant="light">Registrar Cliente</Button>
+                <Button onPress={onOpen} color="primary" variant="light" className="max-w-sm">Registrar Cliente</Button>
             }
             <Modal
                 isOpen={isOpen}
@@ -115,14 +118,15 @@ export default function ClienteComponent({ type = 'new', fetchCatalogs = null })
                         <>
                             <ModalHeader className="flex flex-col gap-1">Registro de Nuevo Cliente</ModalHeader>
                             <ModalBody>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 max-h-[560px] overflow-auto">
                                     <Input
                                         isRequired
                                         label="Nombre Completo"
+                                        variant="bordered"
                                         name="nombre"
                                         value={clientData.nombre}
                                         onChange={handleInputChange}
-                                        className="sm:col-span-2"
+                                        className="sm:col-span-3"
                                     />
                                     <div className=" flex gap-2">
 
@@ -130,6 +134,7 @@ export default function ClienteComponent({ type = 'new', fetchCatalogs = null })
                                             isRequired
                                             label="Canal de Venta"
                                             name="selected_canal_venta"
+                                            variant="bordered"
                                             selectedKeys={clientData.selected_canal_venta ? [clientData.selected_canal_venta] : []}
                                             onChange={handleSelectChange}
                                         >
@@ -144,45 +149,75 @@ export default function ClienteComponent({ type = 'new', fetchCatalogs = null })
                                     <Input
                                         label="Teléfono"
                                         name="telefono"
+                                        variant="bordered"
                                         value={clientData.telefono}
                                         onChange={handleInputChange}
                                     />
                                     <Input
                                         label="Email"
+                                        variant="bordered"
                                         type="email"
                                         name="email"
                                         value={clientData.email}
                                         onChange={handleInputChange}
                                     />
+                                    <Select
+                                        label="Tipo de cliente"
+                                        selectedKeys={clientData.tipo ? [clientData.tipo] : []}
+                                        variant="bordered"
+                                        onChange={((e) => {
+                                            console.log(e.target.value)
+                                            setClientData(prev => ({ ...prev, tipo: e.target.value }));
+                                        })}
+                                    >
+                                        <SelectItem key={"Final"} value={"Final"}>Final</SelectItem>
+                                        <SelectItem key={"Intermediario"} value={"Intermediario"}>Intermediario</SelectItem>
+                                        <SelectItem key={"Revendedor"} value={"Revendedor"}>Revendedor</SelectItem>
+                                        <SelectItem key={"Instalador"} value={"Instalador"}>Instalador</SelectItem>
+                                        <SelectItem key={"Mantenimiento"} value={"Mantenimiento"}>Mantenimiento</SelectItem>
+                                    </Select>
+
                                     <Checkbox
                                         isSelected={clientData.frecuente}
+                                        variant="bordered"
                                         onValueChange={handleCheckboxChange}
                                     >
                                         Cliente Frecuente
                                     </Checkbox>
-                                    <Input
+                                    <Textarea
                                         label="Domicilio"
                                         name="domicilio"
                                         value={clientData.domicilio}
                                         onChange={handleInputChange}
-                                        className="sm:col-span-3"
+                                        variant="bordered"
+                                        className="sm:col-span-4"
                                     />
                                     <Input
                                         label="Estado"
                                         name="estado"
                                         value={clientData.estado}
+                                        variant="bordered"
                                         onChange={handleInputChange}
                                     />
                                     <Input
                                         label="Ciudad"
                                         name="ciudad"
+                                        variant="bordered"
                                         value={clientData.ciudad}
                                         onChange={handleInputChange}
                                     />
                                     <Input
                                         label="Colonia"
                                         name="colonia"
+                                        variant="bordered"
                                         value={clientData.colonia}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Input
+                                        label="Codigo Postal"
+                                        variant="bordered"
+                                        name="cp"
+                                        value={clientData.cp}
                                         onChange={handleInputChange}
                                     />
 
