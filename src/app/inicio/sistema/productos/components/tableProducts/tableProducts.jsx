@@ -14,11 +14,11 @@ import {
     Pagination,
     Spinner // Para mostrar el estado de carga
 } from "@nextui-org/react";
+import RegisterProduct from "../register/registerProduct";
 
 
 // Definimos las columnas que tendrá nuestra tabla
 const columns = [
-    { key: "nombre", label: "NOMBRE" },
     { key: "sku", label: "SKU" },
     { key: "tipo", label: "TIPO" },
     { key: "costo", label: "COSTO" },
@@ -42,25 +42,25 @@ export default function TableProducts() {
 
     // --- FETCH DE DATOS ---
     useEffect(() => {
-        const fetchProducts = async () => {
-            setIsLoading(true);
-            try {
-                const res = await fetch('/api/productos');
-                const json = await res.json();
-                if (json.ok) {
-                    setProducts(json.data);
-                } else {
-                    console.error("Error al obtener los productos:", json.error);
-                }
-            } catch (error) {
-                console.error("Fallo en la conexión con la API:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+
         fetchProducts();
     }, []); // El array vacío asegura que se ejecute solo una vez al montar el componente
-
+    const fetchProducts = async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/productos');
+            const json = await res.json();
+            if (json.ok) {
+                setProducts(json.data);
+            } else {
+                console.error("Error al obtener los productos:", json.error);
+            }
+        } catch (error) {
+            console.error("Fallo en la conexión con la API:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     // --- LÓGICA DE FILTRADO Y BÚSQUEDA (MEMOIZADA) ---
     const filteredItems = useMemo(() => {
         let filteredProducts = [...products];
@@ -129,6 +129,9 @@ export default function TableProducts() {
 
         return (
             <div className="flex flex-col gap-4">
+                <div>
+                    <RegisterProduct fetchProducts={fetchProducts} />
+                </div>
                 <div className="flex justify-between gap-3 items-end">
                     <Input
                         isClearable

@@ -19,7 +19,7 @@ const InfoBlock = ({ label, value }) => (
     </div>
 );
 
-export default function CotizacionHeader({ cotizacion, catalogs, onUpdate }) {
+export default function CotizacionHeader({ cotizacion, catalogs, onUpdate, isAdmin }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [editFormData, setEditFormData] = useState(cotizacion);
 
@@ -107,14 +107,24 @@ export default function CotizacionHeader({ cotizacion, catalogs, onUpdate }) {
                 </CardHeader>
                 <Divider />
                 <CardBody>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8">
                         <InfoBlock label="Cliente" value={cotizacion.cliente_nombre || 'N/A'} />
                         <InfoBlock label="Vendedor" value={cotizacion.usuario_nombre || 'N/A'} />
                         <InfoBlock label="Agente" value={cotizacion.nombre_agente || 'N/A'} />
                         <InfoBlock label="Método de Envío" value={cotizacion.envio_descripcion || 'N/A'} />
-                        <InfoBlock label="Comisión Vendedor" value={`${cotizacion.comision_vendedor || 0}%`} />
-                        <InfoBlock label="Comisión Agente" value={`${cotizacion.comision_agente || 0}%`} />
-                        <InfoBlock label="Costo de Envío" value={`$${Number(cotizacion.envio_precio || 0).toFixed(2)}`} />
+                        <InfoBlock label="Nombre Proyecto" value={cotizacion.nombreProyecto || ''} />
+                        <InfoBlock label="Linea Cotizada" value={cotizacion.linea_cotizada || ''} />
+
+                        {isAdmin ?
+                            <>
+                                <InfoBlock label="Comisión Vendedor" value={`${cotizacion.comision_vendedor || 0}%`} />
+                                <InfoBlock label="Comisión Agente" value={`${cotizacion.comision_agente || 0}%`} />
+                                <InfoBlock label="Costo de Envío" value={`$${Number(cotizacion.envio_precio || 0).toFixed(2)}`} />
+                            </>
+                            :
+                            null
+
+                        }
                     </div>
                 </CardBody>
             </Card>

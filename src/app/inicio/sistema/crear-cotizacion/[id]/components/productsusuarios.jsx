@@ -41,7 +41,7 @@ const SaveIcon = (props) => (
 
 
 // --- Componente Principal ---
-export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteStatus, initialProducts, productCatalog, onUpdate, descuento, comisionVendedor, comisionAgente, proteccion, isAdmin }) {
+export default function CotizacionProductsUsuarios({ preciosInstalacion, quoteId, quoteStatus, initialProducts, productCatalog, onUpdate, descuento, comisionVendedor, comisionAgente, proteccion, isAdmin }) {
     const route = useRouter();
     const [products, setProducts] = useState([]);
     const [toleracion, setTolerancia] = useState(0.15)
@@ -191,6 +191,7 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
         const newProductData = {
             id: `local-${Date.now()}`,
             idProducto: newProductForm.idProducto,
+            sku: selectedProductInfo.sku,
             cantidad: parseInt(newProductForm.cantidad, 10),
             alto: parseFloat(newProductForm.alto) || null,
             ancho: parseFloat(newProductForm.ancho) || null,
@@ -413,13 +414,7 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
                             <TableColumn>Medidas</TableColumn>
                             <TableColumn>Descripcion</TableColumn>
                             <TableColumn>CANT.</TableColumn>
-                            <TableColumn>COSTO BASE</TableColumn>
-                            <TableColumn>+ PROT.</TableColumn>
-                            <TableColumn>+ INST.</TableColumn>
-                            <TableColumn>+ MARGEN</TableColumn>
-                            <TableColumn>+ DESC.</TableColumn>
-                            <TableColumn>+ COM. AGENTE</TableColumn>
-                            <TableColumn>+ COM. VEND.</TableColumn>
+
                             <TableColumn>PRECIO P/PZA</TableColumn>
                             <TableColumn>SUBTOTAL</TableColumn>
                             <TableColumn>ACCIONES</TableColumn>
@@ -431,13 +426,7 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
                                     <TableCell>{item.newMedidas}</TableCell>
                                     <TableCell>{item.description}</TableCell>
                                     <TableCell>{item.cantidad}</TableCell>
-                                    <TableCell>${(item.calculated?.costoBase || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-blue-600">+${(item.calculated?.proteccion || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-secondary-600">+${(item.calculated?.instalacion || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-purple-600">+${(item.calculated?.margen || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-danger-500">+${(item.calculated?.descuento || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-orange-600">+${(item.calculated?.comisionAgente || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-orange-600">+${(item.calculated?.comisionVendedor || 0).toFixed(2)}</TableCell>
+
                                     <TableCell className="font-semibold">${(item.calculated?.precioPieza || 0).toFixed(2)}</TableCell>
                                     <TableCell className="font-bold">${(item.calculated?.subtotal || 0).toFixed(2)}</TableCell>
                                     <TableCell>

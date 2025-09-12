@@ -48,7 +48,6 @@ export async function GET(req) {
 
         // ✅ MEJORA: Se comprueba si el usuario existe antes de acceder a sus propiedades
         const esExterno = externoInfo.length > 0 ? externoInfo[0].externo : null;
-        console.log(esExterno)
         // El objeto final combina los resultados de todas las consultas
         const data = {
             clientes,

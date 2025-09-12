@@ -16,8 +16,8 @@ export async function POST(req) {
       INSERT INTO productos (
         nombre, sku, descripcion, tamano, tipo, medidas,
         modeloSB, colorSB, modeloProveedor, colorProveedor,
-        costo, stockinicial, precio, margen, is_automatizacion, is_persiana
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        costo, stockinicial, precio, margen, is_automatizacion, is_persiana,type
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
         // 3. Preparamos los valores en el orden correcto
@@ -38,7 +38,8 @@ export async function POST(req) {
             precio || null,
             margen || null,
             is_automatizacion || false,
-            is_persiana || false
+            is_persiana || false,
+            tipo == "Telas" ? nombre : null
         ];
 
         // 4. Ejecutamos la consulta

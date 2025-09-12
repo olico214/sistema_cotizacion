@@ -14,7 +14,7 @@ export default async function IdCotizacionViewPage({ params }) {
     }
 
     // Hacemos la carga de datos del lado del servidor
-    const res = await fetch(`${process.env.FRONTEND_URL}/api/cotizacion/${id}`, { cache: 'no-store' });
+    const res = await fetch(`${process.env.FRONTEND_URL}/api/cotizacion/${id}?user=${userid.value}`, { cache: 'no-store' });
     const data = await res.json();
 
     if (!data.cotizacion) {
@@ -27,7 +27,7 @@ export default async function IdCotizacionViewPage({ params }) {
     }
     return (
         <div className="p-4 sm:p-8 space-y-8">
-            <CotizacionHeaderView cotizacion={data.cotizacion} />
+            <CotizacionHeaderView cotizacion={data.cotizacion} isAdmin={data.isAdmin} />
             {/* <CotizacionProductsView productos={data.productos} cotizacion={data.cotizacion} /> */}
             <CotizacionProductsViewtest productos={data.productos} cotizacion={data.cotizacion} />
             <DrawerOptionsComponent id={id} />

@@ -10,9 +10,9 @@ export default async function SistemaPAge() {
     }
 
     // Hacemos la carga de datos del lado del servidor
-    const res = await fetch(process.env.FRONTEND_URL + "/api/listado_ov", { cache: 'no-store' });
+    const res = await fetch(process.env.FRONTEND_URL + "/api/listado_ov");
     const data = await res.json();
-    const result = data.ok ? data.data : [];
+    const result = data.data ? data.data : [];
 
     return (
         <div>

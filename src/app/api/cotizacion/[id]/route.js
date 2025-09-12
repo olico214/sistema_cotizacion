@@ -3,6 +3,16 @@ import pool from "@/libs/mysql";
 
 // OBTENER los detalles completos de UNA cotización
 export async function GET(req, { params }) {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("user");
+
+    // Es una buena práctica validar que los parámetros necesarios existen
+    if (!userId) {
+        return NextResponse.json(
+            { ok: false, error: "El parámetro 'user' es requerido." },
+            { status: 400 } // 400 Bad Request
+        );
+    }
     try {
         const { id } = await params;
 
@@ -57,9 +67,15 @@ export async function GET(req, { params }) {
         `;
         const [productsResult] = await pool.query(productQuery, [id]);
 
+        const isAdminQuery = `
+            SELECT externo from users where userID = ?;
+        `;
+        const [isAdminResult] = await pool.query(isAdminQuery, [userId]);
+
         return NextResponse.json({
             cotizacion: headerResult[0],
-            productos: productsResult
+            productos: productsResult,
+            isAdmin: isAdminResult[0].externo ? true : false
         });
 
     } catch (error) {

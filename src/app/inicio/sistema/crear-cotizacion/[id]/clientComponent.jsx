@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Spinner } from "@nextui-org/react";
 import CotizacionHeader from "./components/header";
 import CotizacionProducts from "./components/products";
+import CotizacionProductsUsuarios from "./components/productsusuarios";
 
 export default function CotizacionDetailPageComponent({ user }) {
     const { id } = useParams();
@@ -16,12 +17,12 @@ export default function CotizacionDetailPageComponent({ user }) {
     const [comisionAgente, setComisionAgente] = useState(0);
     const [proteccion, setProteccion] = useState(0);
     const [isAdmin, setIsAdmin] = useState(false)
-
+    const [instalacion, setInstalacion] = useState([])
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
             const [cotizacionRes, catalogsRes] = await Promise.all([
-                fetch(`/api/cotizacion/${id}`),
+                fetch(`/api/cotizacion/${id}?user=` + user),
                 fetch('/api/initial-data?user=' + user)
             ]);
 
@@ -46,7 +47,7 @@ export default function CotizacionDetailPageComponent({ user }) {
                 setCatalogs(catalogsData.data);
             }
             setIsAdmin(catalogsData.data.esExterno)
-
+            setInstalacion(catalogsData.data.instalacion)
         } catch (error) {
             console.error("Error al cargar los datos:", error);
         } finally {
@@ -72,20 +73,38 @@ export default function CotizacionDetailPageComponent({ user }) {
                 cotizacion={data.cotizacion}
                 catalogs={catalogs}
                 onUpdate={fetchData}
-            />
-
-            <CotizacionProducts
-                quoteId={id}
-                quoteStatus={data.cotizacion.estatus}
-                initialProducts={data.productos}
-                productCatalog={catalogs.productos}
-                descuento={descuentoValor}
-                onUpdate={fetchData}
-                comisionVendedor={comisionVendedor}
-                comisionAgente={comisionAgente}
-                proteccion={proteccion}
                 isAdmin={isAdmin}
             />
+            {isAdmin ?
+
+                <CotizacionProducts
+                    quoteId={id}
+                    quoteStatus={data.cotizacion.estatus}
+                    initialProducts={data.productos}
+                    productCatalog={catalogs.productos}
+                    descuento={descuentoValor}
+                    onUpdate={fetchData}
+                    comisionVendedor={comisionVendedor}
+                    comisionAgente={comisionAgente}
+                    proteccion={proteccion}
+                    isAdmin={isAdmin}
+                    preciosInstalacion={instalacion}
+                />
+                :
+                <CotizacionProductsUsuarios
+                    quoteId={id}
+                    quoteStatus={data.cotizacion.estatus}
+                    initialProducts={data.productos}
+                    productCatalog={catalogs.productos}
+                    descuento={descuentoValor}
+                    onUpdate={fetchData}
+                    comisionVendedor={comisionVendedor}
+                    comisionAgente={comisionAgente}
+                    proteccion={proteccion}
+                    isAdmin={isAdmin}
+                    preciosInstalacion={instalacion}
+                />
+            }
         </div>
     );
 }

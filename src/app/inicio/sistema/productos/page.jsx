@@ -1,5 +1,5 @@
 import { validateCookie } from "@/libs/usercontroller/usercontroller";
-import RegisterProduct from "./components/register/registerProduct";
+
 import TableProducts from "./components/tableProducts/tableProducts";
 import { redirect } from "next/navigation";
 
@@ -11,9 +11,7 @@ export default async function ProductosPage() {
     }
     return (
         <div>
-            <div>
-                <RegisterProduct />
-            </div>
+
             <div>
                 <TableProducts />
             </div>

@@ -44,8 +44,8 @@ export default function CotizacionesTable({ initialData, user }) {
                     {(item) => (
                         <TableRow key={item.id}>
                             <TableCell>#{item.id}</TableCell>
-                            <TableCell>{item.cliente_nombre}</TableCell>
-                            <TableCell>{item.usuario_nombre}</TableCell>
+                            <TableCell>{item.cliente_nombre || "-"}</TableCell>
+                            <TableCell>{item.usuario_nombre || "-"}</TableCell>
                             <TableCell>{formatDate(item.createdDate)}</TableCell>
                             <TableCell>
                                 <Chip color={statusColorMap[item.estatus]} size="sm" variant="flat">

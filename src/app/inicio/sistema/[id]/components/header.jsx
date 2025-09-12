@@ -2,7 +2,7 @@
 import { Card, CardHeader, CardBody, Divider, Chip, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 
 // --- Sub-componente para mostrar el encabezado ---
-export default function CotizacionHeaderView({ cotizacion }) {
+export default function CotizacionHeaderView({ cotizacion, isAdmin }) {
     const InfoBlock = ({ label, value }) => (
         <div>
             <p className="text-xs text-default-500 uppercase font-semibold">{label}</p>
@@ -30,15 +30,23 @@ export default function CotizacionHeaderView({ cotizacion }) {
             </CardHeader>
             <Divider />
             <CardBody>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8">
                     <InfoBlock label="Cliente" value={cotizacion.cliente_nombre} />
                     <InfoBlock label="Vendedor" value={cotizacion.usuario_nombre} />
                     <InfoBlock label="Agente" value={cotizacion.nombre_agente} />
                     <InfoBlock label="Método de Envío" value={cotizacion.envio_descripcion} />
-                    <InfoBlock label="Comisión Vendedor" value={`${cotizacion.comision_vendedor || 0}%`} />
-                    <InfoBlock label="Comisión Agente" value={`${cotizacion.comision_agente || 0}%`} />
-                    <InfoBlock label="Costo de Envío" value={`$${Number(cotizacion.envio_precio || 0).toFixed(2)}`} />
-                    <InfoBlock label="Protección Telas" value={`${cotizacion.proteccion || 0}%`} />
+                    <InfoBlock label="Nombre Proyecto" value={cotizacion.nombreProyecto || ''} />
+                    <InfoBlock label="Linea Cotizada" value={cotizacion.linea_cotizada || ''} />
+                    {isAdmin ?
+                        <>
+                            <InfoBlock label="Comisión Vendedor" value={`${cotizacion.comision_vendedor || 0}%`} />
+                            <InfoBlock label="Comisión Agente" value={`${cotizacion.comision_agente || 0}%`} />
+                            <InfoBlock label="Costo de Envío" value={`$${Number(cotizacion.envio_precio || 0).toFixed(2)}`} />
+                            <InfoBlock label="Protección Telas" value={`${cotizacion.proteccion || 0}%`} />
+                        </>
+                        :
+                        null
+                    }
                 </div>
             </CardBody>
         </Card>

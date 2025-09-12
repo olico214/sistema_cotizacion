@@ -6,9 +6,13 @@ import {
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Button, Select, SelectItem, Spinner,
     Autocomplete,
-    AutocompleteItem
+    AutocompleteItem,
+    Input,
+    Tooltip
 } from "@nextui-org/react";
 import ClienteComponent from "../../clientes/components/registroCliente/registrarCliente";
+import { FaQuestion } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const initialFormState = {
     idCliente: "",
@@ -16,8 +20,43 @@ const initialFormState = {
     idAgente: "",
     idTipoproyecto: "",
     id_envio: "",
+    nombreProyecto: "",
+    lineaCotizada: ""
 };
 
+const lineas = [{
+    key: "Presianas Premium", value: "Presianas Premium"
+},
+{
+    key: "Persianas Automaticas", value: "Persianas Automaticas"
+},
+{
+    key: "Motores", value: "Motores"
+},
+{
+    key: "Reparacion", value: "Reparacion"
+},
+{
+    key: "Persianas Anticiclonicas", value: "Persianas Anticiclonicas"
+},
+{
+    key: "Persianas Europeas", value: "Persianas Europeas"
+},
+{
+    key: "Toldo Vertical", value: "Toldo Vertical"
+},
+{
+    key: "BR Presianas", value: "BR Presianas"
+},
+{
+    key: "BR Insumos Persianas", value: "BR Insumos Persianas"
+},
+{
+    key: "BR Otros", value: "BR Otros"
+},
+{
+    key: "Cortinas Premium", value: "Cortinas Premium"
+}]
 export default function CotizacionForm({ isOpen, onClose, user }) {
     const router = useRouter();
     const [formData, setFormData] = useState(initialFormState);
@@ -49,28 +88,60 @@ export default function CotizacionForm({ isOpen, onClose, user }) {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-
     const handleSubmit = async () => {
-        setIsLoading(true);
-        try {
-            const res = await fetch('/api/listado_ov', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-            const result = await res.json();
-            if (!result.ok) throw new Error(result.error);
+        // 1. Muestra la alerta de confirmación
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se creará una nueva cotización con los datos ingresados.",
+            icon: 'question', // Un ícono de pregunta es más adecuado para confirmaciones
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, ¡crear ahora!',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            // 2. Si el usuario confirma, ejecuta el código original
+            if (result.isConfirmed) {
+                setIsLoading(true);
+                try {
+                    const res = await fetch('/api/listado_ov', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData),
+                    });
 
-            // ¡Redirección! La parte clave del flujo.
-            router.push(`./crear-cotizacion/${result.id}`);
+                    const data = await res.json();
+                    if (!data.ok) {
+                        // Muestra un swal de error si la API devuelve un problema
+                        throw new Error(data.error || 'Ocurrió un error en el servidor.');
+                    }
 
-        } catch (error) {
-            console.error("Error al crear la cotización:", error);
-        } finally {
-            setIsLoading(false);
-        }
+                    // Opcional: Muestra un mensaje de éxito antes de redirigir
+                    await Swal.fire({
+                        title: '¡Éxito!',
+                        text: 'La cotización ha sido creada correctamente.',
+                        icon: 'success',
+                        timer: 1500, // Cierra automáticamente después de 1.5 segundos
+                        showConfirmButton: false,
+                    });
+
+                    // Redirección
+                    router.push(`./crear-cotizacion/${data.id}`);
+
+                } catch (error) {
+                    console.error("Error al crear la cotización:", error);
+                    // Muestra una alerta de error al usuario
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error.message || 'No se pudo crear la cotización. Inténtalo de nuevo.',
+                    });
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        });
     };
-
     return (
         <Modal isOpen={isOpen} onOpenChange={onClose} size="5xl" isDismissable={false}>
             <ModalContent>
@@ -81,7 +152,7 @@ export default function CotizacionForm({ isOpen, onClose, user }) {
                             {isCatalogsLoading ? (
                                 <Spinner label="Cargando datos..." />
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="flex gap-1">
 
                                         <Autocomplete
@@ -96,19 +167,44 @@ export default function CotizacionForm({ isOpen, onClose, user }) {
                                         </Autocomplete>
                                         <ClienteComponent type={"cliente"} fetchCatalogs={fetchCatalogs} />
                                     </div>
-
-                                    <Select name="idUser" label="Vendedor" items={catalogs.usuarios} onChange={handleSelectChange} isRequired>
-                                        {(usuario) => <SelectItem key={usuario.id}>{usuario.fullname}</SelectItem>}
-                                    </Select>
-                                    <Select name="idAgente" label="Agente" items={catalogs.usuarios} onChange={handleSelectChange} isRequired>
-                                        {(usuario) => <SelectItem key={usuario.id}>{usuario.fullname}</SelectItem>}
+                                    <Select name="lineaCotizada" label="Linea Cotizada" items={lineas} onChange={handleSelectChange} isRequired>
+                                        {(envio) => <SelectItem key={envio.key}>{envio.key}</SelectItem>}
                                     </Select>
                                     <Select name="idTipoproyecto" label="Tipo de Proyecto" items={catalogs.tiposProyecto} onChange={handleSelectChange} isRequired>
                                         {(tipo) => <SelectItem key={tipo.id}>{tipo.nombre}</SelectItem>}
                                     </Select>
+                                    <Select name="idUser" label="Vendedor" items={catalogs.usuarios} onChange={handleSelectChange} >
+                                        {(usuario) => <SelectItem key={usuario.id}>{usuario.fullname}</SelectItem>}
+                                    </Select>
+                                    <Select name="idAgente" label="Agente" items={catalogs.usuarios} onChange={handleSelectChange} >
+                                        {(usuario) => <SelectItem key={usuario.id}>{usuario.fullname}</SelectItem>}
+                                    </Select>
+
                                     <Select name="id_envio" label="Método de Envío (Opcional)" items={catalogs.envios} onChange={handleSelectChange}>
                                         {(envio) => <SelectItem key={envio.id}>{envio.descripcion}</SelectItem>}
                                     </Select>
+
+                                    <div className="flex items-center gap-2"> {/* Centra verticalmente y ajusta el espacio */}
+                                        <Input
+                                            label="Nombre del Proyecto"
+                                            name="nombreProyecto"
+                                            value={formData.nombreProyecto}
+                                            onChange={(e) => {
+                                                setFormData(prev => ({ ...prev, ["nombreProyecto"]: e.target.value }));
+                                            }}
+                                        />
+                                        <Tooltip content="Dejar vacío genera un nombre aleatorio">
+                                            {/* Usamos isIconOnly y variant="light" para que se vea solo el ícono */}
+                                            <Button
+                                                isIconOnly
+                                                variant="light"
+                                                size="sm"
+                                                className="mt-4" /* Ajusta el margen si es necesario */
+                                            >
+                                                <FaQuestion />
+                                            </Button>
+                                        </Tooltip>
+                                    </div>
                                 </div>
                             )}
                         </ModalBody>

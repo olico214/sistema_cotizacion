@@ -40,7 +40,7 @@ const productTypes = [
     { key: "Telas", label: "Telas" },
 ];
 
-export default function RegisterProduct() {
+export default function RegisterProduct({ fetchProducts }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const [productType, setProductType] = useState("otro");
@@ -86,6 +86,7 @@ export default function RegisterProduct() {
             if (!res.ok) throw new Error("Error en la respuesta del servidor");
             const result = await res.json();
             console.log("Producto guardado:", result);
+            fetchProducts(); // Actualiza la lista de productos
             onClose();
         } catch (error) {
             console.error("Error al guardar:", error);
@@ -131,7 +132,7 @@ export default function RegisterProduct() {
                                         </Checkbox>
                                     </div>
                                     {/* Inputs comunes y condicionales (sin cambios aquí) */}
-                                    <Input name="nombre" label="Nombre" value={formData.nombre} onChange={handleInputChange} />
+                                    <Input name="nombre" label={productType == "Telas" ? "Tipo" : "Nombre"} value={formData.nombre} onChange={handleInputChange} />
                                     <Input name="sku" label="SKU" value={formData.sku} onChange={handleInputChange} />
                                     <Input name="descripcion" label="Descripción" value={formData.descripcion} onChange={handleInputChange} className="md:col-span-2" />
                                     <Input name="tamano" label="Tamaño" value={formData.tamano} onChange={handleInputChange} />
