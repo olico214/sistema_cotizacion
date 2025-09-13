@@ -5,7 +5,6 @@ dotenv.config({ path: ".env.locale" });
 
 let pool;
 
-// 🔹 Función que crea un pool nuevo
 function createPool() {
   return mysql.createPool({
     host: process.env.DB_HOST || "localhost",
@@ -13,7 +12,7 @@ function createPool() {
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "",
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 100,
     queueLimit: 0,
     multipleStatements: true,
     namedPlaceholders: true,
