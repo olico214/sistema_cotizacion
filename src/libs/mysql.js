@@ -1,20 +1,26 @@
 import mysql from "mysql2/promise";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
-dotenv.config({ path: '.env.locale' });
+dotenv.config({ path: ".env.locale" });
+
 let pool;
 
-try {
-  pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD, // deja vacío si no pusiste contraseña
-    database: process.env.DB_NAME,
+if (!global._mysqlPool) {
+  global._mysqlPool = mysql.createPool({
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "",
+    database: process.env.DB_NAME || "",
+    waitForConnections: true,
+    connectionLimit: 10, // máximo de conexiones abiertas
+    queueLimit: 0,
     multipleStatements: true,
     namedPlaceholders: true,
   });
-} catch (err) {
-  console.error("Error al conectar con la base de datos:", err);
+
+  console.log("✅ Pool de MySQL creado");
 }
+
+pool = global._mysqlPool;
 
 export default pool;
