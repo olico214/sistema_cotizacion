@@ -23,7 +23,7 @@ FROM Profile t0;
     `;
 
     const [result] = await connection.query(query, [id]);
-    connection.release();
+
 
     return NextResponse.json({ ok: true, result });
   } catch (error) {
@@ -69,7 +69,7 @@ export async function POST(req, { params }) {
       }
     }
 
-    connection.release();
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error(error);

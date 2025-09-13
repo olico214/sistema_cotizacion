@@ -4,9 +4,6 @@ import pool from "@/libs/mysql"; // Asegúrate que la ruta a tu conexión sea co
 export async function POST(req) {
     try {
         const { externo, id } = await req.json();
-
-        console.log(externo, id)
-
         const query = "update users set externo =? where userID =?"
         const values = [externo, id || null];
 

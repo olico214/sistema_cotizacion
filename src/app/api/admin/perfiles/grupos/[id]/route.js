@@ -17,8 +17,7 @@ LEFT JOIN admin_groups t1 ON t0.idGroup = t1.id;
       [id]
     );
 
-    console.log(existingUsers);
-    connection.release();
+
     return NextResponse.json({ ok: true, result, existingUsers });
   } catch (error) {
     console.error(error);
@@ -68,7 +67,5 @@ export async function POST(req, { params }) {
   } catch (error) {
     console.error("Error en la API:", error);
     return NextResponse.json({ ok: false, error: error.message });
-  } finally {
-    if (connection) connection.release(); // Liberar la conexión siempre
   }
 }
