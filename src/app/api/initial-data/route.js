@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql"; // Asegúrate de que la ruta sea correcta
+import pool from "@/libs/mysql-safe"; // Asegúrate de que la ruta sea correcta
 
 export async function GET(req) {
     const { searchParams } = new URL(req.url);

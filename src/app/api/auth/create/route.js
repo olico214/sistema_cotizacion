@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 export async function POST(req) {
   try {
     const { email, contraseña, name, perfil, externo, clave } =
       await req.json();
-    console.log(email, contraseña, name, perfil, externo, clave);
     // Verifica que se recibieron correctamente el email y password
     if (!email || !contraseña) {
       throw new Error("Email and password are required");

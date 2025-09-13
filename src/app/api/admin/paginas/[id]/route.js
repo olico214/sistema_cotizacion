@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 export async function POST(req, { params }) {
   const { id } = await params;
@@ -26,7 +26,6 @@ export async function GET(req) {
     const query = `SELECT * FROM views`;
 
     const [result] = await pool.query(query, []);
-    console.log(result);
     return NextResponse.json({ ok: true, result });
   } catch (error) {
     console.error("Error en POST /api/perfiles:", error);

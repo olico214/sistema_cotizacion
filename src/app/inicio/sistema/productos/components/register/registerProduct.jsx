@@ -77,7 +77,6 @@ export default function RegisterProduct({ fetchProducts }) {
                 ...formData,
                 tipo: productType
             };
-            console.log("Datos a enviar:", dataToSend);
             const res = await fetch("/api/productos", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -85,7 +84,6 @@ export default function RegisterProduct({ fetchProducts }) {
             });
             if (!res.ok) throw new Error("Error en la respuesta del servidor");
             const result = await res.json();
-            console.log("Producto guardado:", result);
             fetchProducts(); // Actualiza la lista de productos
             onClose();
         } catch (error) {

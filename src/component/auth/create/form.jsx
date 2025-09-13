@@ -33,7 +33,6 @@ export default function RegisterLogin() {
         e.preventDefault();
         let data = Object.fromEntries(new FormData(e.currentTarget));
         data.externo = isSelected;
-        console.log(data);
         const response = await fetch("/api/auth/create", {
           method: "POST",
           headers: {

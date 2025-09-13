@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 export async function POST(req) {
   try {
     const data = await req.json();
     const { id, opciones } = data;
 
-    console.log("Datos recibidos:", data);
 
     // Obtener los registros actuales en la BD para este perfil
     const [rows] = await pool.query(

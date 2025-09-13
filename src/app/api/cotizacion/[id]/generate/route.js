@@ -1,4 +1,4 @@
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 import { NextResponse } from "next/server";
 
 // OBTENER los detalles completos de UNA cotización
@@ -46,7 +46,6 @@ export async function GET(req, { params }) {
         if (headerResult.length === 0) {
             return NextResponse.json({ message: "Cotización no encontrada" }, { status: 404 });
         }
-        console.log("headers")
         // Query para los productos
         const productQuery = `
 SELECT 
@@ -63,17 +62,14 @@ p.precio as actual_precio,
             `;
         const [productsResult] = await pool.query(productQuery, [id]);
         // Query para los productos
-        console.log("products")
         const condiciones = `
         SELECT * from condiciones_generales order by orden asc`;
         const [condicionesResult] = await pool.query(condiciones, []);
-        console.log("condiciones")
 
 
         const descuento = `
         SELECT titulo,comentario from descuento`;
         const [descuentoResult] = await pool.query(descuento, []);
-        console.log("descuento")
 
         return NextResponse.json({
             cotizacion: headerResult[0],

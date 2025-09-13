@@ -53,7 +53,6 @@ export default function CondicionesGeneralesComponent() {
             // Sincroniza el estado del frontend con los datos del backend.
             setCondiciones(data);
 
-            console.log("Cambios guardados y estado sincronizado.");
 
         } catch (err) {
             setError(err.message);

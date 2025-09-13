@@ -27,7 +27,6 @@ export default function AsignUsuarios({ item }) {
     const profiles = JSON.parse(data.result[0].profiles) || [];
     const selecteds = JSON.parse(data.result[0].selecteds) || [];
 
-    console.log(profiles); // Verifica que profiles tenga datos
     setUsers(profiles); // Guarda la lista completa
     setUserstmp(profiles); // Copia la lista para manipularla
 
@@ -52,7 +51,6 @@ export default function AsignUsuarios({ item }) {
     const selectedValue = e;
 
     const selectedItem = users.find((item) => item.id == selectedValue); // Busca el item en la lista
-    console.log(selectedItem);
     if (selectedItem) {
       setSelectedUsers((prev) => [...prev, selectedItem]); // Agrega al tmp
       setUserstmp((prev) => prev.filter((item) => item.id !== selectedItem.id));

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 // --- GUARDAR UN NUEVO PRODUCTO ---
 export async function POST(req) {

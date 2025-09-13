@@ -1,4 +1,4 @@
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 

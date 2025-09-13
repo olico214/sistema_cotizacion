@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql"; // Asegúrate que la ruta a tu conexión sea correcta
+import pool from "@/libs/mysql-safe"; // Asegúrate que la ruta a tu conexión sea correcta
 
 export async function POST(req) {
     try {

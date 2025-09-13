@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 // GUARDAR (SOBREESCRIBIR) TODOS los productos de una cotización
 export async function POST(req, { params }) {
@@ -8,7 +8,6 @@ export async function POST(req, { params }) {
     try {
         const { id: idCotizacion } = await params;
         const { products, precioNormal, precioReal, iva, descuento, toleracion } = await req.json();
-        console.log(toleracion)
         // 1. Validar estatus antes de hacer cualquier cambio
         const [cotizacion] = await connection.query("SELECT estatus FROM listado_ov WHERE id = ?", [idCotizacion]);
         const estatusActual = cotizacion[0]?.estatus;

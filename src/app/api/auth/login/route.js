@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 import { CreateCookie } from "@/libs/auth/cookie";
 
 export async function POST(req) {

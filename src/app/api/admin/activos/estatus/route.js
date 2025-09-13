@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 export async function POST(req) {
   try {
     const data = await req.json();
     const { name, color, id } = data;
     let query, values;
-    console.log(data);
 
     if (id > 0) {
       // Actualizar perfil existente

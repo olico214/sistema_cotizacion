@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql"; // Asegúrate de que la ruta a tu conexión de BD sea correcta
+import pool from "@/libs/mysql-safe"; // Asegúrate de que la ruta a tu conexión de BD sea correcta
 
 /**
  * @description Obtiene todas las condiciones generales, ordenadas por el campo 'orden'.

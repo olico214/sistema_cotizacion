@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 // OBTENER la lista de cotizaciones con nombres de cliente y usuario
 export async function GET() {
@@ -25,7 +25,6 @@ export async function GET() {
                 ov.id DESC;
         `;
         const [result] = await pool.query(query);
-        console.log(result)
         return NextResponse.json({ ok: true, data: result });
     } catch (error) {
         return NextResponse.json({ ok: false, error: error.message }, { status: 500 });

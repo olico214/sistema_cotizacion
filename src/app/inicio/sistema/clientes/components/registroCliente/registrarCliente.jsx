@@ -166,7 +166,6 @@ export default function ClienteComponent({ type = 'new', fetchClientes = null })
                                         selectedKeys={clientData.tipo ? [clientData.tipo] : []}
                                         variant="bordered"
                                         onChange={((e) => {
-                                            console.log(e.target.value)
                                             setClientData(prev => ({ ...prev, tipo: e.target.value }));
                                         })}
                                     >

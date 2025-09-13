@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 export async function POST(req, { params }) {
   const { id } = await params; // id del modelo
   try {
     const data = await req.json(); // Datos enviados desde el frontend
-    console.log(data);
     const connection = await pool.getConnection();
 
     // Obtener las descripciones actuales de la base de datos

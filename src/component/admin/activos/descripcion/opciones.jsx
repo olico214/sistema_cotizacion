@@ -85,7 +85,6 @@ export default function OpcionesComponent({ id }) {
 
       if (response.ok) {
         toast.success("Opciones guardadas correctamente.");
-        console.log("Opciones guardadas:", rows);
       } else {
         toast.error("Error al guardar las opciones.");
         console.error("Error al guardar las opciones:", response.statusText);

@@ -41,7 +41,6 @@ export default function ModalEditview({ page, apps }) {
 
   const handleOpen = () => {
     if (page) {
-      console.log(page);
       setId(page.id);
       setApp(page.apps);
       setNombre(page.page);

@@ -15,7 +15,6 @@ export default function GruposComponent() {
     try {
       const response = await fetch("/api/admin/grupos");
       const data = await response.json();
-      console.log(data.result);
       setData(data.result);
     } catch (error) {
       console.error("Error al obtener datos:", error);

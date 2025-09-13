@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 export async function POST(req) {
   try {
     const data = await req.json();
     const { id, nombre, descripcion, status } = data;
 
-    console.log(data);
 
     let query, values;
 

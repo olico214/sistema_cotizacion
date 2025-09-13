@@ -1,7 +1,7 @@
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 export const getData = async (id) => {
- const connection = await pool.getConnection();
+  const connection = await pool.getConnection();
 
 
   const queryViews = `

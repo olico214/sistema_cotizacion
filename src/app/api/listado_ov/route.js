@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/libs/mysql";
+import pool from "@/libs/mysql-safe";
 
 // OBTENER la lista de cotizaciones con nombres de cliente y usuario
 export async function GET() {
@@ -73,7 +73,6 @@ export async function POST(req) {
             const canal = (canalYCliente[0].canal || '').substring(0, 2).toUpperCase();
             const cliente = (canalYCliente[0].tipocliente || '').substring(0, 2).toUpperCase();
             const folio = countResult[0].total + 1;
-            // console.log(tipo, canal, cliente, mes, dia, folio)
             finalNombreProyecto = `${tipo}${canal}${cliente}${mes}${dia}-${folio}`;
         }
 

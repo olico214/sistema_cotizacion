@@ -20,7 +20,7 @@ import ModalEditview from "./modal";
 const STATUSES = [
   "Sistema",
   "Administracion",
-  
+
 ];
 
 export default function DragPages({ pages, apps }) {
@@ -48,7 +48,6 @@ export default function DragPages({ pages, apps }) {
       const overIndex = users.findIndex((user) => user.id === overId);
       setUsers((users) => arrayMove(users, activeIndex, overIndex));
     } catch {
-      console.log("No se puede mover entre columnas");
     }
   };
 

@@ -25,7 +25,6 @@ export default function DrawerOptionsComponent({ id }) {
                 const response = await fetch(`/api/cotizacion/${id}/generate`);
                 if (!response.ok) throw new Error("Error al cargar la cotización");
                 const result = await response.json();
-                console.log(result)
                 setData(result);
             } catch (error) {
                 console.error(error);
