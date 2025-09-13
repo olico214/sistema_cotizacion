@@ -79,8 +79,5 @@ export async function POST(req, { params }) {
         // Si hay algún error, revertir la transacción
         if (connection) await connection.rollback();
         return NextResponse.json({ error: error.message }, { status: 500 });
-    } finally {
-        // Siempre liberar la conexión al final
-        if (connection) connection.release();
     }
 }

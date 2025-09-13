@@ -45,8 +45,6 @@ export const fetchPaginasDiponibles = async (value) => {
   } catch (error) {
     console.error("Error en la consulta:", error);
     return { tipo: "Error", error: error.message };
-  } finally {
-    if (connection) connection.release();
   }
 };
 
@@ -61,7 +59,5 @@ export const fetchUsuario = async (value) => {
   } catch (error) {
     console.error("Error en la consulta:", error);
     return { tipo: "Error", error: error.message };
-  } finally {
-    if (connection) connection.release();
   }
 };

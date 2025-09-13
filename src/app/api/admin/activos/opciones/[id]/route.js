@@ -40,8 +40,6 @@ export async function POST(req, { params }) {
       await connection.query(deleteQuery, [idToDelete]);
     }
 
-    connection.release();
-
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error(error);
@@ -57,8 +55,6 @@ export async function GET(req, { params }) {
     // Insertar el nodo principal en la base de datos
     const query = `select * from  activos_status_opciones   where idestatus=?`;
     const [result] = await connection.query(query, [id]);
-
-    connection.release();
 
     return NextResponse.json({ ok: true, result });
   } catch (error) {
@@ -76,8 +72,6 @@ export async function DELETE(req, { params }) {
     const query = `DELETE FROM  activos_status_opciones  WHERE id = ?`;
     const [result] = await connection.query(query, [id]);
     const newNodeId = result.insertId;
-
-    connection.release();
 
     return NextResponse.json({ ok: true, id: newNodeId });
   } catch (error) {

@@ -17,8 +17,6 @@ export async function POST(req) {
         const query = `SELECT * FROM users WHERE email = ? AND status = ?`;
         const [rows] = await connection.query(query, [email, 'active']);
 
-        connection.release();
-
         if (rows.length === 0) {
             throw new Error("User not found or not active");
         }

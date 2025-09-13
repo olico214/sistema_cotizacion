@@ -34,8 +34,6 @@ export async function POST(req) {
       clave,
     ]);
 
-    connection.release();
-
     // Retorna una respuesta exitosa
     return NextResponse.json({ ok: true, userId: result.insertId });
   } catch (error) {

@@ -9,7 +9,6 @@ export async function GET() {
         const connection = await pool.getConnection();
         const query = "SELECT * FROM condiciones_generales ORDER BY orden ASC";
         const [results] = await connection.query(query);
-        connection.release();
 
         return NextResponse.json(results);
 
@@ -62,8 +61,6 @@ export async function POST(req) {
             { error: "Error al guardar las condiciones: " + error.message },
             { status: 500 }
         );
-    } finally {
-        if (connection) connection.release();
     }
 }
 
