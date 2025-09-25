@@ -26,10 +26,7 @@ export default function CotizacionesTable({ initialData }) {
 
     return (
         <div className="p-4 sm:p-8">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Cotizaciones</h1>
-                <Button color="primary" onPress={onOpen}>Nueva Cotización</Button>
-            </div>
+
 
             <Table aria-label="Tabla de Cotizaciones">
                 <TableHeader>

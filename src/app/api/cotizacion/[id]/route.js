@@ -37,13 +37,15 @@ export async function GET(req, { params }) {
                 ov.iva,
                 ov.precioNormal,
                 ov.precioNormalconDescuento,
-                ov.precioReal
+                ov.precioReal,
+                pt.nombre as tipo_proyecto_nombre
             FROM 
                 listado_ov AS ov
             LEFT JOIN clientes AS c ON ov.idCliente = c.id
             LEFT JOIN users_data AS u ON ov.idUser = u.id
             LEFT JOIN envio AS e ON ov.id_envio = e.id
             LEFT JOIN users_data AS uAgent ON ov.idAgente = uAgent.id
+            left join tipo_proyecto pt on pt.id = ov.idTipoproyecto
             WHERE ov.id = ?;
         `;
         const [headerResult] = await pool.query(headerQuery, [id]);

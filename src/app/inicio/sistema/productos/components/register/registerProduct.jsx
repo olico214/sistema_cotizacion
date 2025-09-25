@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Modal, ModalContent,
     ModalHeader,
@@ -14,7 +14,6 @@ import {
     SelectItem
 } from "@nextui-org/react";
 
-// Objeto con el estado inicial para limpiar el formulario fácilmente
 const initialFormData = {
     nombre: '',
     sku: '',
@@ -40,52 +39,75 @@ const productTypes = [
     { key: "Telas", label: "Telas" },
 ];
 
-export default function RegisterProduct({ fetchProducts }) {
+// Recibe `productToEdit` y `children` para el botón que abre el modal
+export default function RegisterProduct({ fetchProducts, productToEdit = null, children }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-    const [productType, setProductType] = useState("otro");
     const [formData, setFormData] = useState(initialFormData);
+    const [productType, setProductType] = useState("otro");
 
+    // Determina si estamos en modo edición
+    const isEditMode = productToEdit !== null;
+
+    // Efecto para calcular el precio (sin cambios)
     useEffect(() => {
         const cost = parseFloat(formData.costo);
         const margin = parseFloat(formData.margen);
-
         if (cost > 0 && margin >= 0 && margin < 100) {
             const calculatedPrice = cost / (1 - (margin / 100));
             setFormData(prev => ({ ...prev, precio: calculatedPrice.toFixed(2) }));
+        } else if (isEditMode) {
+            // En modo edición, si se borra el costo, no borramos el precio necesariamente
+            // podrías mantener el precio anterior o recalcular si el margen sigue ahí
         } else {
-            // Si el costo o el margen no son válidos, limpia el precio
             setFormData(prev => ({ ...prev, precio: '' }));
         }
-    }, [formData.costo, formData.margen]);
+    }, [formData.costo, formData.margen, isEditMode]);
+
+
+    // Popula el formulario cuando se abre el modal en modo edición
+    useEffect(() => {
+        if (isOpen && isEditMode) {
+            // Usamos un spread para asegurarnos de que todos los campos de initialFormData estén presentes
+            // y luego sobreescribimos con los datos del producto a editar.
+            setFormData({ ...initialFormData, ...productToEdit });
+            setProductType(productToEdit.tipo || "otro");
+        }
+    }, [isOpen, isEditMode, productToEdit]);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // --- NUEVA FUNCIÓN PARA LIMPIAR ---
     const handleClear = () => {
-        setFormData(initialFormData); // Restablece los campos del formulario
-        setProductType('otro');     // Restablece el selector de tipo
+        setFormData(initialFormData);
+        setProductType('otro');
+    };
+
+    // Al cerrar el modal, siempre limpiamos el formulario para el siguiente uso
+    const handleClose = () => {
+        onOpenChange(false); // Cierra el modal
+        handleClear(); // Limpia el estado
     };
 
     const handleSubmit = async (onClose) => {
-        // ... (tu lógica para enviar a la API se mantiene igual)
+        const url = isEditMode ? `/api/productos/${productToEdit.id}` : '/api/productos';
+        const method = isEditMode ? 'PUT' : 'POST';
+
         try {
-            const dataToSend = {
-                ...formData,
-                tipo: productType
-            };
-            const res = await fetch("/api/productos", {
-                method: 'POST',
+            const dataToSend = { ...formData, tipo: productType };
+            const res = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataToSend),
             });
-            if (!res.ok) throw new Error("Error en la respuesta del servidor");
-            const result = await res.json();
+
+            if (!res.ok) throw new Error(`Error: ${res.statusText}`);
+
+            await res.json();
             fetchProducts(); // Actualiza la lista de productos
-            onClose();
+            onClose(); // Cierra el modal y limpia el formulario
         } catch (error) {
             console.error("Error al guardar:", error);
         }
@@ -93,18 +115,22 @@ export default function RegisterProduct({ fetchProducts }) {
 
     return (
         <>
-            <Button onPress={onOpen} color="primary">Nuevo Producto</Button>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="4xl">
+            {/* Clona el botón/ícono que se le pasa y le añade la función de abrir el modal */}
+            {React.cloneElement(children, { onPress: onOpen })}
+
+            <Modal isOpen={isOpen} onOpenChange={handleClose} placement="center" size="4xl" scrollBehavior="inside">
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Registrar Nuevo Producto</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">
+                                {isEditMode ? 'Editar Producto' : 'Registrar Nuevo Producto'}
+                            </ModalHeader>
                             <ModalBody>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Select
                                         label="Tipo de Producto"
                                         placeholder="Selecciona un tipo"
-                                        selectedKeys={[productType]}
+                                        selectedKeys={productType ? [productType] : []}
                                         onChange={(e) => setProductType(e.target.value)}
                                         className="md:col-span-2"
                                     >
@@ -129,15 +155,15 @@ export default function RegisterProduct({ fetchProducts }) {
                                             Persianas
                                         </Checkbox>
                                     </div>
-                                    {/* Inputs comunes y condicionales (sin cambios aquí) */}
-                                    <Input name="nombre" label={productType == "Telas" ? "Tipo" : "Nombre"} value={formData.nombre} onChange={handleInputChange} />
+                                    <Input name="nombre" label={productType === "Telas" ? "Tipo" : "Nombre"} value={formData.nombre} onChange={handleInputChange} />
                                     <Input name="sku" label="SKU" value={formData.sku} onChange={handleInputChange} />
                                     <Input name="descripcion" label="Descripción" value={formData.descripcion} onChange={handleInputChange} className="md:col-span-2" />
                                     <Input name="tamano" label="Tamaño" value={formData.tamano} onChange={handleInputChange} />
                                     <Input name="stockinicial" label="Stock Inicial" type="number" value={formData.stockinicial} onChange={handleInputChange} />
                                     <Input name="costo" label="Costo" type="number" startContent="$" value={formData.costo} onChange={handleInputChange} isRequired />
-                                    <Input name="margen" label="Margen" type="number" startContent="%" value={formData.margen} onChange={handleInputChange} />
+                                    <Input name="margen" label="Margen" type="number" endContent="%" value={formData.margen} onChange={handleInputChange} />
                                     <Input name="precio" label="Precio" type="number" startContent="$" value={formData.precio} isReadOnly />
+
                                     {productType === 'Telas' && (
                                         <>
                                             <Input name="medidas" label="Medidas" value={formData.medidas} onChange={handleInputChange} />
@@ -147,19 +173,19 @@ export default function RegisterProduct({ fetchProducts }) {
                                             <Input name="colorProveedor" label="Color Proveedor" value={formData.colorProveedor} onChange={handleInputChange} />
                                         </>
                                     )}
-
                                 </div>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
                                     Cancelar
                                 </Button>
-                                {/* --- NUEVO BOTÓN DE LIMPIEZA --- */}
-                                <Button color="secondary" variant="ghost" onPress={handleClear}>
-                                    Limpiar 🧹
-                                </Button>
+                                {!isEditMode && (
+                                    <Button color="secondary" variant="ghost" onPress={handleClear}>
+                                        Limpiar 🧹
+                                    </Button>
+                                )}
                                 <Button color="primary" onPress={() => handleSubmit(onClose)}>
-                                    Guardar Producto
+                                    {isEditMode ? 'Guardar Cambios' : 'Guardar Producto'}
                                 </Button>
                             </ModalFooter>
                         </>

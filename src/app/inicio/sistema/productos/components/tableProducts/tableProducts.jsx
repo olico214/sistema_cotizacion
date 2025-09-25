@@ -12,39 +12,49 @@ import {
     Button,
     Chip,
     Pagination,
-    Spinner // Para mostrar el estado de carga
+    Spinner,
+    Tooltip
 } from "@nextui-org/react";
 import RegisterProduct from "../register/registerProduct";
 
+// --- ARCHIVOS DE ÍCONOS ---
+// Asegúrate de que estos componentes existan o defínelos aquí
+const EditIcon = (props) => (
+    <svg aria-hidden="true" fill="none" focusable="false" height="1em" role="presentation" viewBox="0 0 20 20" width="1em" {...props}>
+        <path d="M11.05 3.00002L4.20835 10.2417C3.95002 10.5167 3.70002 11.0584 3.65002 11.4334L3.34169 14.1334C3.23335 15.1084 3.93335 15.775 4.90002 15.6084L7.58335 15.15C7.95835 15.0834 8.48335 14.8084 8.74168 14.525L15.5834 7.28335C16.7667 6.03335 17.3 4.60835 15.4583 2.86668C13.625 1.14168 12.2334 1.75002 11.05 3.00002Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="1.5"></path>
+        <path d="M9.90833 4.20831C10.2667 6.50831 12.1333 8.26665 14.45 8.50831" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="1.5"></path>
+    </svg>
+);
+const DeleteIcon = (props) => (
+    <svg aria-hidden="true" fill="none" focusable="false" height="1em" role="presentation" viewBox="0 0 20 20" width="1em" {...props}>
+        <path d="M17.5 4.98332C14.725 4.72499 11.9333 4.59166 9.15 4.59166C7.5 4.59166 5.85 4.67499 4.2 4.82499L2.5 4.98332" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+        <path d="M7.08331 4.14169L7.26665 3.05002C7.39998 2.25835 7.49998 1.66669 8.90831 1.66669H11.0916C12.5 1.66669 12.6083 2.29169 12.7333 3.05835L12.9166 4.14169" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+        <path d="M15.7084 7.61664L15.1667 16.0083C15.075 17.3166 15 18.3333 12.675 18.3333H7.32502C5.00002 18.3333 4.92502 17.3166 4.83335 16.0083L4.29169 7.61664" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+        <path d="M8.60834 13.75H11.3833" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+        <path d="M7.91669 10.4167H12.0834" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
+    </svg>
+);
 
-// Definimos las columnas que tendrá nuestra tabla
+
 const columns = [
     { key: "sku", label: "SKU" },
+    { key: "nombre", label: "NOMBRE" },
     { key: "tipo", label: "TIPO" },
     { key: "costo", label: "COSTO" },
     { key: "margen", label: "MARGEN" },
-    { key: "is_automatizacion", label: "AUTOMATIZACION" },
-    { key: "is_persiana", label: "PERSIANA" },
     { key: "precio", label: "PRECIO" },
     { key: "stockinicial", label: "STOCK" },
+    { key: "actions", label: "ACCIONES" },
 ];
 
 export default function TableProducts() {
-    // --- ESTADOS ---
-    const [products, setProducts] = useState([]); // Almacena todos los productos de la API
-    const [isLoading, setIsLoading] = useState(true); // Estado de carga
-    const [filterValue, setFilterValue] = useState(""); // Valor del campo de búsqueda
-    const [typeFilter, setTypeFilter] = useState("all"); // Filtro por tipo de producto
-    const [page, setPage] = useState(1); // Página actual de la paginación
-
-    // --- CONFIGURACIÓN ---
+    const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [filterValue, setFilterValue] = useState("");
+    const [typeFilter, setTypeFilter] = useState("all");
+    const [page, setPage] = useState(1);
     const rowsPerPage = 10;
 
-    // --- FETCH DE DATOS ---
-    useEffect(() => {
-
-        fetchProducts();
-    }, []); // El array vacío asegura que se ejecute solo una vez al montar el componente
     const fetchProducts = async () => {
         setIsLoading(true);
         try {
@@ -61,26 +71,24 @@ export default function TableProducts() {
             setIsLoading(false);
         }
     };
-    // --- LÓGICA DE FILTRADO Y BÚSQUEDA (MEMOIZADA) ---
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
     const filteredItems = useMemo(() => {
         let filteredProducts = [...products];
-
-        // Filtro de búsqueda por nombre
         if (filterValue) {
             filteredProducts = filteredProducts.filter(product =>
                 product.nombre.toLowerCase().includes(filterValue.toLowerCase())
             );
         }
-
-        // Filtro por tipo
         if (typeFilter !== "all") {
             filteredProducts = filteredProducts.filter(product => product.tipo === typeFilter);
         }
-
         return filteredProducts;
     }, [products, filterValue, typeFilter]);
 
-    // --- LÓGICA DE PAGINACIÓN (MEMOIZADA) ---
     const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
     const items = useMemo(() => {
@@ -89,11 +97,10 @@ export default function TableProducts() {
         return filteredItems.slice(start, end);
     }, [page, filteredItems]);
 
-    // --- MANEJADORES DE EVENTOS (CALLBACKS) ---
     const onSearchChange = useCallback((value) => {
         if (value) {
             setFilterValue(value);
-            setPage(1); // Regresa a la primera página al buscar
+            setPage(1);
         } else {
             setFilterValue("");
         }
@@ -104,7 +111,6 @@ export default function TableProducts() {
         setPage(1);
     }, []);
 
-    // --- RENDERIZADO DE CELDAS PERSONALIZADO ---
     const renderCell = useCallback((product, columnKey) => {
         const cellValue = product[columnKey];
 
@@ -117,35 +123,44 @@ export default function TableProducts() {
                 );
             case "costo":
             case "precio":
-                return `$${Number(cellValue).toFixed(2)}`; // Formatea como moneda
+                return `$${Number(cellValue).toFixed(2)}`;
+
+            case "actions":
+                return (
+                    <div className="relative flex items-center gap-2">
+                        <Tooltip content="Editar producto">
+                            <RegisterProduct fetchProducts={fetchProducts} productToEdit={product}>
+                                <Button isIconOnly size="sm" variant="light">
+                                    <EditIcon />
+                                </Button>
+                            </RegisterProduct>
+                        </Tooltip>
+                    </div>
+                );
             default:
                 return cellValue;
         }
-    }, []);
-
+    }, [fetchProducts]);
 
     const topContent = useMemo(() => {
-        const productTypes = ["all", ...new Set(products.map(p => p.tipo))]; // Obtiene tipos únicos
-
+        const productTypes = ["all", ...new Set(products.map(p => p.tipo).filter(Boolean))];
         return (
             <div className="flex flex-col gap-4">
-                <div>
-                    <RegisterProduct fetchProducts={fetchProducts} />
-                </div>
                 <div className="flex justify-between gap-3 items-end">
                     <Input
                         isClearable
                         className="w-full sm:max-w-[44%]"
                         placeholder="Buscar por nombre..."
-
                         value={filterValue}
-                        onClear={() => onClear()}
+                        onClear={onClear}
                         onValueChange={onSearchChange}
                     />
+                    <RegisterProduct fetchProducts={fetchProducts}>
+                        <Button color="primary">Nuevo Producto</Button>
+                    </RegisterProduct>
                 </div>
                 <div className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                        {/* Chips para filtrar por tipo */}
+                    <div className="flex gap-2 overflow-x-auto pb-2">
                         {productTypes.map(type => (
                             <Chip
                                 key={type}
@@ -161,15 +176,11 @@ export default function TableProducts() {
                             </Chip>
                         ))}
                     </div>
-                    {/* Chips con los totales */}
-                    <div className="flex gap-2">
-                        <Chip color="default">Total: {products.length}</Chip>
-                        <Chip color="success">Mostrando: {filteredItems.length}</Chip>
-                    </div>
                 </div>
+                <span className="text-default-400 text-small">Total {products.length} productos</span>
             </div>
         );
-    }, [filterValue, onSearchChange, products, typeFilter]);
+    }, [filterValue, onSearchChange, products, typeFilter, onClear, fetchProducts]);
 
     return (
         <Table
@@ -211,4 +222,3 @@ export default function TableProducts() {
         </Table>
     );
 }
-

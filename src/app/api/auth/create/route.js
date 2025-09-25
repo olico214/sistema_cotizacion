@@ -4,7 +4,7 @@ import pool from "@/libs/mysql-safe";
 
 export async function POST(req) {
   try {
-    const { email, contraseña, name, perfil, externo, clave } =
+    const { email, contraseña, name, perfil, externo, clave = "nada" } =
       await req.json();
     // Verifica que se recibieron correctamente el email y password
     if (!email || !contraseña) {

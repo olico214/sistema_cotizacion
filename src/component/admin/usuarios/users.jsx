@@ -50,7 +50,7 @@ export default function TableUsers({ users }) {
         <TableHeader>
           <TableColumn>Correo</TableColumn>
           <TableColumn>Nombre</TableColumn>
-          <TableColumn>Clave</TableColumn>
+          {/* <TableColumn>Clave</TableColumn> */}
           <TableColumn>Perfil</TableColumn>
           <TableColumn>Estatus</TableColumn>
         </TableHeader>
@@ -63,7 +63,7 @@ export default function TableUsers({ users }) {
                 </Link>
               </TableCell>
               <TableCell>{user.fullname}</TableCell>
-              <TableCell>{user.clave}</TableCell>
+              {/* <TableCell>{user.clave}</TableCell> */}
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.status}</TableCell>
             </TableRow>

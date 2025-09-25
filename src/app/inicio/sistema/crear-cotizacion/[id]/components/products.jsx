@@ -73,7 +73,7 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
 
         return productList.map(item => {
             const costoBaseProducto = (item.producto_tipo === 'Telas')
-                ? (item.alto * item.ancho * (item.actual_costo || 0)) * item.cantidad
+                ? (item.alto < 1 ? 1 : item.alto * item.ancho < 1 ? 1 : item.ancho * (item.actual_costo || 0)) * item.cantidad
                 : (item.actual_costo || 0) * item.cantidad;
 
             let proteccionMonto = 0;

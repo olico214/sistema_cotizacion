@@ -28,7 +28,7 @@ export default function CotizacionDetailPageComponent({ user }) {
 
             const cotizacionData = await cotizacionRes.json();
             const catalogsData = await catalogsRes.json();
-
+            console.log(cotizacionData.cotizacion.tipo_proyecto_nombre)
             // --- CORRECCIÓN: Se leen los datos directamente de la respuesta de la API ---
             // La API ya no devuelve un objeto { ok, data }, sino directamente { cotizacion, productos }
             if (cotizacionData.cotizacion) {
@@ -46,8 +46,22 @@ export default function CotizacionDetailPageComponent({ user }) {
             if (catalogsData.ok) {
                 setCatalogs(catalogsData.data);
             }
+            let newInstalacion = [
+                {
+                    "id": 1,
+                    "minimo": 1,
+                    "maximo": 10000,
+                    "precio": "0"
+                },
+            ]
+
+            // Verifica si el nombre del proyecto (en minúsculas) incluye "br p"
+            if (cotizacionData.cotizacion.tipo_proyecto_nombre.toLowerCase().includes("br p")) {
+                setInstalacion(newInstalacion);
+            } else {
+                setInstalacion(catalogsData.data.instalacion);
+            }
             setIsAdmin(catalogsData.data.esExterno)
-            setInstalacion(catalogsData.data.instalacion)
         } catch (error) {
             console.error("Error al cargar los datos:", error);
         } finally {

@@ -57,12 +57,12 @@ export default function RegisterLogin() {
           labelPlacement="outside"
           name="name"
         />
-        <Input
+        {/* <Input
           label="Clave"
           errorMessage="Clave"
           labelPlacement="outside"
           name="clave"
-        />
+        /> */}
       </div>
       <div>
         <Input
