@@ -6,7 +6,7 @@ import GenericCatalog from "./genericCatalog";
 // Configuración para el catálogo "Tipos de Proyecto"
 const tipoProyectoConfig = {
     title: "Tipos de Proyecto",
-    apiEndpoint: "/api/proyectos/tipos",
+    apiEndpoint: "/api/catalogos/proyectos/tipos",
     columns: [
         { key: "nombre", label: "Nombre" },
         { key: "actions", label: "Acciones" },
@@ -19,7 +19,7 @@ const tipoProyectoConfig = {
 
 const instalacion = {
     title: "Instalacion",
-    apiEndpoint: "/api/instalacion",
+    apiEndpoint: "/api/catalogos/instalacion",
     columns: [
         { key: "minimo", label: "Minimo" },
         { key: "maximo", label: "Maximo" },
@@ -36,7 +36,7 @@ const instalacion = {
 
 const descuento = {
     title: "Descuentos",
-    apiEndpoint: "/api/descuentos",
+    apiEndpoint: "/api/catalogos/descuentos",
     columns: [
         { key: "descuento", label: "Descuento" },
         { key: "titulo", label: "Titulo" },
@@ -53,7 +53,7 @@ const descuento = {
 // Configuración para el catálogo "Métodos de Envío"
 const envioConfig = {
     title: "Métodos de Envío",
-    apiEndpoint: "/api/envios",
+    apiEndpoint: "/api/catalogos/envios",
     columns: [
         { key: "descripcion", label: "Descripción" },
         { key: "sku", label: "SKU" },
@@ -71,6 +71,23 @@ const envioConfig = {
     initialState: { sku: "", descripcion: "", tamano: "", precio: "", costo: "" },
 };
 
+const aumentosCatalog = {
+    title: "Variaciones de precios por %",
+    apiEndpoint: "/api/catalogos/aumentos",
+    columns: [
+        { key: "piezas_minimas", label: "Piezas Mínimas" },
+        { key: "piezas_maximas", label: "Piezas Máximas" },
+        { key: "descuento", label: "Variación %" },
+        { key: "actions", label: "Acciones" },
+    ],
+    formFields: [
+        { name: "piezas_minimas", label: "Piezas Mínimas" },
+        { name: "piezas_maximas", label: "Piezas Máximas" },
+        { name: "descuento", label: "Variación %" },
+    ],
+    initialState: { piezas_minimas: "", piezas_maximas: "", descuento: "" },
+};
+
 export default function CatalogosPage() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 sm:p-8">
@@ -83,6 +100,10 @@ export default function CatalogosPage() {
             <div className="lg:col-span-2">
 
                 <GenericCatalog {...instalacion} />
+            </div>
+            <div className="lg:col-span-2">
+
+                <GenericCatalog {...aumentosCatalog} />
             </div>
             <div className="lg:col-span-2">
 

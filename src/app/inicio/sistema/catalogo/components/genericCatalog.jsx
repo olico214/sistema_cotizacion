@@ -45,6 +45,7 @@ export default function GenericCatalog({ title, apiEndpoint, columns, formFields
         const body = JSON.stringify(currentItem ? { ...formData, id: currentItem.id } : formData);
         await fetch(apiEndpoint, { method, headers: { 'Content-Type': 'application/json' }, body });
         fetchItems();
+        setFormData(initialState);
         onClose();
     };
 
