@@ -41,7 +41,7 @@ const SaveIcon = (props) => (
 
 
 // --- Componente Principal ---
-export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteStatus, initialProducts, productCatalog, onUpdate, descuento, comisionVendedor, comisionAgente, proteccion, isAdmin }) {
+export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteStatus, initialProducts, productCatalog, onUpdate, descuento, comisionVendedor, comisionAgente, proteccion, isAdmin, aumentos }) {
     const route = useRouter();
     const [products, setProducts] = useState([]);
     const [toleracion, setTolerancia] = useState(0.15)
@@ -70,12 +70,22 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
     const recalculateAllProducts = (productList) => {
         const cantidadTelas = productList.filter(p => p.producto_tipo === 'Telas').length;
         const costoInstalacionUnificado = getPrecioInstalacion(cantidadTelas);
+        const totProducts = productList.length
+        const aumentoPorcentaje = (totProducts, costoBaseProducto) => {
+            for (const i of aumentos) {
+                if (totProducts >= i.piezas_minimas && totProducts <= i.piezas_maximas) {
+                    const aumento = i.descuento || 0;
+                    return costoBaseProducto + (costoBaseProducto * (aumento / 100));
+                }
+            }
+            return costoBaseProducto + (costoBaseProducto * (0 / 100));
+        }
 
         return productList.map(item => {
-            const costoBaseProducto = (item.producto_tipo === 'Telas')
+            let costoBaseProducto = (item.producto_tipo === 'Telas')
                 ? (item.alto < 1 ? 1 : item.alto * item.ancho < 1 ? 1 : item.ancho * (item.actual_costo || 0)) * item.cantidad
                 : (item.actual_costo || 0) * item.cantidad;
-
+            costoBaseProducto = aumentoPorcentaje(totProducts, costoBaseProducto);
             let proteccionMonto = 0;
             if (item.producto_tipo === 'Telas') {
                 proteccionMonto = costoBaseProducto * ((parseFloat(proteccion) / 100) || 0);

@@ -18,6 +18,8 @@ export default function CotizacionDetailPageComponent({ user }) {
     const [proteccion, setProteccion] = useState(0);
     const [isAdmin, setIsAdmin] = useState(false)
     const [instalacion, setInstalacion] = useState([])
+    const [aumentos, setAumentos] = useState([])
+
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
@@ -62,6 +64,7 @@ export default function CotizacionDetailPageComponent({ user }) {
                 setInstalacion(catalogsData.data.instalacion);
             }
             setIsAdmin(catalogsData.data.esExterno)
+            setAumentos(catalogsData.data.aumentos)
         } catch (error) {
             console.error("Error al cargar los datos:", error);
         } finally {
@@ -103,6 +106,7 @@ export default function CotizacionDetailPageComponent({ user }) {
                     proteccion={proteccion}
                     isAdmin={isAdmin}
                     preciosInstalacion={instalacion}
+                    aumentos={aumentos}
                 />
                 :
                 <CotizacionProductsUsuarios
@@ -117,6 +121,7 @@ export default function CotizacionDetailPageComponent({ user }) {
                     proteccion={proteccion}
                     isAdmin={isAdmin}
                     preciosInstalacion={instalacion}
+                    aumentos={aumentos}
                 />
             }
         </div>

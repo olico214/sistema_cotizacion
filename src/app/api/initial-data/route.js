@@ -23,6 +23,7 @@ export async function GET(req) {
             enviosResult,
             descuentoResult,
             instalacionResult,
+            aumentosResult,
             externoResult,
         ] = await Promise.all([
             pool.query("SELECT * FROM clientes ORDER BY nombre ASC"),
@@ -32,7 +33,7 @@ export async function GET(req) {
             pool.query("SELECT * FROM envio ORDER BY descripcion ASC"),
             pool.query("SELECT * FROM descuento"),
             pool.query("SELECT * FROM instalacion"),
-            // ⚠️ CORREGIDO: Se utiliza una consulta parametrizada para prevenir SQL Injection
+            pool.query("SELECT * FROM aumentos"),
             pool.query("SELECT externo FROM users WHERE userID = ?", [userId]),
         ]);
 
@@ -44,10 +45,9 @@ export async function GET(req) {
         const envios = enviosResult[0];
         const descuento = descuentoResult[0];
         const instalacion = instalacionResult[0];
-        const externoInfo = externoResult[0];
-
+        const aumentos = aumentosResult[0];
         // ✅ MEJORA: Se comprueba si el usuario existe antes de acceder a sus propiedades
-        const esExterno = externoInfo.length > 0 ? externoInfo[0].externo : null;
+        const esExterno = externoResult.length > 0 ? externoResult[0][0].externo : null;
         // El objeto final combina los resultados de todas las consultas
         const data = {
             clientes,
@@ -57,6 +57,7 @@ export async function GET(req) {
             envios,
             descuento,
             instalacion,
+            aumentos,
             esExterno, // Se añade la información del usuario externo a la respuesta
         };
 
