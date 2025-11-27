@@ -61,15 +61,22 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
         ubicacion: ""
     });
     const getPrecioInstalacion = (cantidadTelas) => {
+        console.log("Calculando precio de instalación para", cantidadTelas, "telas.");
         if (cantidadTelas === 0) return 0;
-        const tier = preciosInstalacion.find(p => cantidadTelas >= p.minimo && cantidadTelas <= p.maximo);
-        return tier ? tier.precio : 0;
+        for (const p of preciosInstalacion) {
+            if (cantidadTelas >= p.minimo && cantidadTelas <= p.maximo) {
+                console.log("Nivel de instalación encontrado:", p);
+                return p.precio;
+            }
+        }
+        return 0;
     };
 
     // --- Función principal de recálculo ---
     const recalculateAllProducts = (productList) => {
         const cantidadTelas = productList.filter(p => p.producto_tipo === 'Telas').length;
         const costoInstalacionUnificado = getPrecioInstalacion(cantidadTelas);
+
         const totProducts = productList.length
         const aumentoPorcentaje = (totProducts, costoBaseProducto) => {
             for (const i of aumentos) {
@@ -83,7 +90,7 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
 
         return productList.map(item => {
             let costoBaseProducto = (item.producto_tipo === 'Telas')
-                ? (item.alto < 1 ? 1 : item.alto * item.ancho < 1 ? 1 : item.ancho * (item.actual_costo || 0)) * item.cantidad
+                ? ((parseFloat(item.alto) < 1 ? 1 : (parseFloat(item.alto) * parseFloat(item.ancho) < 1 ? 1 : parseFloat(item.alto) * parseFloat(item.ancho))) * (item.actual_costo || 0)) * item.cantidad
                 : (item.actual_costo || 0) * item.cantidad;
             costoBaseProducto = aumentoPorcentaje(totProducts, costoBaseProducto);
             let proteccionMonto = 0;
@@ -216,7 +223,8 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
             newMedidas: selectedProductInfo.tipo == "Telas"
                 ?
                 `${parseFloat(newProductForm.ancho) + parseFloat(toleracion)} mts x ${parseFloat(newProductForm.alto) + parseFloat(toleracion)} mts.`
-                : selectedProductInfo.tamano
+                : selectedProductInfo.tamano,
+            sku: selectedProductInfo.sku
         };
         const updatedList = recalculateAllProducts([...products, newProductData]);
         setProducts(updatedList);
@@ -439,7 +447,11 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
                                 <TableRow key={item.id}>
                                     <TableCell>{item.sku}</TableCell>
                                     <TableCell>{item.newMedidas}</TableCell>
-                                    <TableCell>{item.description}</TableCell>
+                                    <TableCell>{item.description.length > 20 ? <Tooltip content={item.description}>
+                                        <Button color="primary" variant="light" >{item.description.substring(0, 20)}...</Button>
+                                    </Tooltip> :
+                                        item.description}
+                                    </TableCell>
                                     <TableCell>{item.cantidad}</TableCell>
                                     <TableCell>${(item.calculated?.costoBase || 0).toFixed(2)}</TableCell>
                                     <TableCell className="text-blue-600">+${(item.calculated?.proteccion || 0).toFixed(2)}</TableCell>

@@ -61,9 +61,15 @@ export default function CotizacionProductsUsuarios({ aumentos, preciosInstalacio
         ubicacion: ""
     });
     const getPrecioInstalacion = (cantidadTelas) => {
+        console.log("Calculando precio de instalación para", cantidadTelas, "telas.");
         if (cantidadTelas === 0) return 0;
-        const tier = preciosInstalacion.find(p => cantidadTelas >= p.minimo && cantidadTelas <= p.maximo);
-        return tier ? tier.precio : 0;
+        for (const p of preciosInstalacion) {
+            if (cantidadTelas >= p.minimo && cantidadTelas <= p.maximo) {
+                console.log("Nivel de instalación encontrado:", p);
+                return p.precio;
+            }
+        }
+        return 0;
     };
 
     // --- Función principal de recálculo ---
@@ -80,11 +86,12 @@ export default function CotizacionProductsUsuarios({ aumentos, preciosInstalacio
             }
             return costoBaseProducto + (costoBaseProducto * (0 / 100));
         }
-
         return productList.map(item => {
             let costoBaseProducto = (item.producto_tipo === 'Telas')
-                ? (item.alto * item.ancho * (item.actual_costo || 0)) * item.cantidad
+                ? ((parseFloat(item.alto) < 1 ? 1 : (parseFloat(item.alto) * parseFloat(item.ancho) < 1 ? 1 : parseFloat(item.alto) * parseFloat(item.ancho))) * (item.actual_costo || 0)) * item.cantidad
                 : (item.actual_costo || 0) * item.cantidad;
+
+
             costoBaseProducto = aumentoPorcentaje(totProducts, costoBaseProducto);
             let proteccionMonto = 0;
             if (item.producto_tipo === 'Telas') {
@@ -217,7 +224,8 @@ export default function CotizacionProductsUsuarios({ aumentos, preciosInstalacio
             newMedidas: selectedProductInfo.tipo == "Telas"
                 ?
                 `${parseFloat(newProductForm.ancho) + parseFloat(toleracion)} mts x ${parseFloat(newProductForm.alto) + parseFloat(toleracion)} mts.`
-                : selectedProductInfo.tamano
+                : selectedProductInfo.tamano,
+            sku: selectedProductInfo.sku
         };
         const updatedList = recalculateAllProducts([...products, newProductData]);
         setProducts(updatedList);
@@ -434,7 +442,11 @@ export default function CotizacionProductsUsuarios({ aumentos, preciosInstalacio
                                 <TableRow key={item.id}>
                                     <TableCell>{item.sku}</TableCell>
                                     <TableCell>{item.newMedidas}</TableCell>
-                                    <TableCell>{item.description}</TableCell>
+                                    <TableCell>{item.description.length > 20 ? <Tooltip content={item.description}>
+                                        <Button color="primary" variant="light" >{item.description.substring(0, 20)}...</Button>
+                                    </Tooltip> :
+                                        item.description}
+                                    </TableCell>
                                     <TableCell>{item.cantidad}</TableCell>
 
                                     <TableCell className="font-semibold">${(item.calculated?.precioPieza || 0).toFixed(2)}</TableCell>
