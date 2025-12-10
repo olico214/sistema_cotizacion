@@ -33,7 +33,7 @@ export default function NavBar() {
       <NavbarContent className="flex gap-4" justify="center">
         <NavbarItem>
           <div className="flex gap-4">
-            <Link className="text-white" href="/inicio">
+            <Link prefetch={false} className="text-white" href="/inicio">
               Inicio
             </Link>
           </div>

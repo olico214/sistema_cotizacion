@@ -54,7 +54,7 @@ export default function CotizacionesTable({ initialData, user }) {
                             </TableCell>
                             <TableCell>
                                 <Tooltip content="Ver detalles y añadir productos">
-                                    <Button as={Link} href={`/inicio/sistema/crear-cotizacion/${item.id}`} color="primary" variant="light" size="sm">
+                                    <Button prefetch={false} as={Link} href={`/inicio/sistema/crear-cotizacion/${item.id}`} color="primary" variant="light" size="sm">
                                         Detalles
                                     </Button>
                                 </Tooltip>

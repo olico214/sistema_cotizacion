@@ -17,7 +17,7 @@ export default function BreadCrumbComponent() {
         : segment.charAt(0).toUpperCase() + segment.slice(1);
     return (
       <BreadcrumbItem key={href}>
-        <Link href={href}>{label}</Link>
+        <Link prefetch={false} href={href}>{label}</Link>
       </BreadcrumbItem>
     );
   });

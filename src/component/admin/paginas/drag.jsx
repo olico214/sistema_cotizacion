@@ -13,8 +13,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import Link from "next/link";
-import { Button, link } from "@nextui-org/react";
+
 import ModalEditview from "./modal";
 
 const STATUSES = [

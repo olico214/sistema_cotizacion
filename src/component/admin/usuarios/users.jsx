@@ -58,7 +58,7 @@ export default function TableUsers({ users }) {
           {filteredUsers.map((user) => (
             <TableRow key={user.userID}>
               <TableCell>
-                <Link href={`/inicio/admin/users/` + user.userID}>
+                <Link prefetch={false} href={`/inicio/admin/users/` + user.userID}>
                   {user.email}
                 </Link>
               </TableCell>

@@ -85,10 +85,11 @@ const Sidebar = ({ children, apps }) => {
                     return (
                       <li key={mod.ruta}>
                         <Link
+                          prefetch={false}
                           href={`/inicio/${mod.ruta}`}
                           className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all ${isActive
-                              ? "bg-primary-500 text-white font-semibold"
-                              : "hover:bg-gray-800 hover:text-white"
+                            ? "bg-primary-500 text-white font-semibold"
+                            : "hover:bg-gray-800 hover:text-white"
                             }`}
                           // Al hacer clic en un link, se cierra el sidebar en móvil
                           onClick={() => isSidebarOpen && setSidebarOpen(false)}

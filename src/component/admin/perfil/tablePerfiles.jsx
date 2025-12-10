@@ -46,9 +46,8 @@ export default function TablePerfiles() {
         </div>
         <div className="flex flex-wrap gap-2 content-end items-center justify-end">
           <span
-            className={`hover:text-black text-slate-500 hover:cursor-pointer ${
-              !filterLetter ? "font-bold text-black" : ""
-            }`}
+            className={`hover:text-black text-slate-500 hover:cursor-pointer ${!filterLetter ? "font-bold text-black" : ""
+              }`}
             onClick={() => setFilterLetter(null)}
           >
             Todos
@@ -56,9 +55,8 @@ export default function TablePerfiles() {
           {alphabet.map((letter) => (
             <span
               key={letter}
-              className={`hover:text-black text-slate-500 hover:cursor-pointer ${
-                filterLetter === letter ? "font-bold text-black" : ""
-              }`}
+              className={`hover:text-black text-slate-500 hover:cursor-pointer ${filterLetter === letter ? "font-bold text-black" : ""
+                }`}
               onClick={() => setFilterLetter(letter)}
             >
               {letter}
@@ -76,7 +74,7 @@ export default function TablePerfiles() {
           {filteredUsers.map((user) => (
             <TableRow key={user.id}>
               <TableCell>
-                <Link href={"/inicio/admin/perfiles/" + user.id}>
+                <Link prefetch={false} href={"/inicio/admin/perfiles/" + user.id}>
                   {user.name}
                 </Link>
               </TableCell>

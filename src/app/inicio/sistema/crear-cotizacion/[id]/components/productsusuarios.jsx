@@ -92,7 +92,7 @@ export default function CotizacionProductsUsuarios({ aumentos, preciosInstalacio
                 : (item.actual_costo || 0) * item.cantidad;
 
 
-            costoBaseProducto = aumentoPorcentaje(totProducts, costoBaseProducto);
+
             let proteccionMonto = 0;
             if (item.producto_tipo === 'Telas') {
                 proteccionMonto = costoBaseProducto * ((parseFloat(proteccion) / 100) || 0);
@@ -109,10 +109,10 @@ export default function CotizacionProductsUsuarios({ aumentos, preciosInstalacio
             const subtotalLinea = divisor > 0 ? costoTotal / divisor : costoTotal;
             const precioPorPieza = item.cantidad > 0 ? subtotalLinea / item.cantidad : 0;
 
-            const precioPostMargen = costoTotal / (1 - (parseFloat(item.margen) / 100 || 0));
+            let precioPostMargen = costoTotal / (1 - (parseFloat(item.margen) / 100 || 0));
             const precioPostDescuento = precioPostMargen / (1 - (parseFloat(descuento) / 100 || 0));
             const precioPostAgente = precioPostDescuento / (1 - (parseFloat(comisionAgente) / 100 || 0));
-
+            precioPostMargen = aumentoPorcentaje(totProducts, precioPostMargen);
             return {
                 ...item,
                 calculated: {
