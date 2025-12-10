@@ -108,7 +108,7 @@ export default function CotizacionProducts({ preciosInstalacion, quoteId, quoteS
             const subtotalLinea = divisor > 0 ? costoTotal / divisor : costoTotal;
             const precioPorPieza = item.cantidad > 0 ? subtotalLinea / item.cantidad : 0;
 
-            const precioPostMargen = costoTotal / (1 - (parseFloat(item.margen) / 100 || 0));
+            let precioPostMargen = costoTotal / (1 - (parseFloat(item.margen) / 100 || 0));
             const precioPostDescuento = precioPostMargen / (1 - (parseFloat(descuento) / 100 || 0));
             const precioPostAgente = precioPostDescuento / (1 - (parseFloat(comisionAgente) / 100 || 0));
             precioPostMargen = aumentoPorcentaje(totProducts, precioPostMargen);
